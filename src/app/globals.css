@@ -542,6 +542,26 @@ img {
   left: 1.8rem;
 }
 
+.hud-logo-corner {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.hud-brand-logo {
+  height: clamp(24px, 3.2vh, 32px);
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 0 8px rgba(0,0,0,0.8));
+}
+
+.hud-logo-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
 .hud-corner.top-right {
   top: 1.2rem;
   right: 1.8rem;
@@ -1074,6 +1094,9 @@ img {
   .classified-hud-container {
     padding: 0.6rem 1rem;
     font-size: 0.38rem;
+  }
+  .hud-brand-logo {
+    height: 22px;
   }
   .drew-drone-container {
     flex-direction: column;

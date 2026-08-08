@@ -29,10 +29,17 @@ export default function ClassifiedHUD() {
 
   return (
     <div className="classified-hud-container">
-      {/* TOP-LEFT CORNER */}
-      <div className="hud-corner top-left">
-        <span className="hud-badge-tag">CLASSIFIED BRIEFING</span>
-        <span className="hud-title-line">FLYTBASE // {activeStatus || 'MISSION ACTIVE'}</span>
+      {/* TOP-LEFT CORNER WITH OFFICIAL FLYTBASE NESTGEN LOGO */}
+      <div className="hud-corner top-left hud-logo-corner">
+        <img
+          src="/flytbase_nestgen_logo.png"
+          alt="FlytBase NestGen Logo"
+          className="hud-brand-logo"
+        />
+        <div className="hud-logo-meta">
+          <span className="hud-badge-tag">CLASSIFIED BRIEFING</span>
+          <span className="hud-title-line">FLYTBASE // {activeStatus || 'MISSION ACTIVE'}</span>
+        </div>
       </div>
 
       {/* TOP-RIGHT CORNER */}
