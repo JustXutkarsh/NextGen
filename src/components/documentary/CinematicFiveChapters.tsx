@@ -6,7 +6,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import SplitType from 'split-type';
 import { useMissionStore } from '@/store/useMissionStore';
 import { sound } from '@/lib/sound';
-import DrewDrone from '@/components/ui/DrewDrone';
+import DrewFloatingOverlay from '@/components/ui/DrewFloatingOverlay';
 import SunGlowOverlay from '@/components/ui/SunGlowOverlay';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -17,15 +17,10 @@ export default function CinematicFiveChapters() {
 
   const { progress, setProgress, setStatus } = useMissionStore();
 
-  // Intro Sequence States
-  const [introStep, setIntroStep] = useState(0);
-  const [introComplete, setIntroComplete] = useState(false);
-
   // Chapter & UI States
   const [aiConfidence, setAiConfidence] = useState(12.0);
   const [scanStage, setScanStage] = useState('INITIALIZING');
   const [isThermal, setIsThermal] = useState(false);
-  const [chap4Step, setChap4Step] = useState(0);
   const [selectedTrack, setSelectedTrack] = useState<string>('Oil & Gas');
   const [isLockingTrack, setIsLockingTrack] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
@@ -34,7 +29,7 @@ export default function CinematicFiveChapters() {
   const [declassified1, setDeclassified1] = useState(false);
   const [declassified35, setDeclassified35] = useState(false);
 
-  // Industry Track Speakers Data from NestGen26_Context.md
+  // Industry Track Speakers Data
   const trackData: Record<string, { speakers: string[]; quote: string; photo: string }> = {
     'Public Safety': {
       speakers: ['UK Police (NPCC)', 'Belgian Police (Politie Westkust)', 'LA Metro', 'Fire Dept Kiel (BF Kiel)'],
@@ -78,40 +73,6 @@ export default function CinematicFiveChapters() {
       setIsLockingTrack(false);
     }, 280);
   };
-
-  // PART 1: THE INTRO SEQUENCE (ONE-TIME ENTRANCE ON PAGE LOAD)
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      const tl = gsap.timeline();
-
-      // 1. Drew flies in from top-right with back.out(1.4) easing
-      tl.fromTo(
-        '#drew-hero',
-        { x: 300, y: -200, opacity: 0, scale: 0.5 },
-        { x: 0, y: 0, opacity: 1, scale: 1, duration: 1.4, ease: 'back.out(1.4)' }
-      );
-
-      // 2. Speech cloud pops in with back.out(1.7) easing
-      tl.fromTo(
-        '#drew-hero .drew-speech-cloud',
-        { scale: 0, opacity: 0 },
-        { scale: 1, opacity: 1, duration: 0.6, ease: 'back.out(1.7)' },
-        '-=0.4'
-      );
-    }, containerRef);
-
-    // Sequence Line 1 -> Line 2 -> Line 3 (~1.2s delay per line)
-    const t1 = setTimeout(() => setIntroStep(1), 1600);
-    const t2 = setTimeout(() => setIntroStep(2), 3200);
-    const t3 = setTimeout(() => setIntroComplete(true), 4600);
-
-    return () => {
-      ctx.revert();
-      clearTimeout(t1);
-      clearTimeout(t2);
-      clearTimeout(t3);
-    };
-  }, []);
 
   // MASTER SCROLLTRIGGER CHOREOGRAPHY
   useEffect(() => {
@@ -217,9 +178,15 @@ export default function CinematicFiveChapters() {
             onUpdate: (self) => {
               const p = self.progress;
               setProgress(0.7 + p * 0.15);
-              if (p > 0.75 && !declassified35) {
-                setDeclassified35(true);
-                sound.playDeclassifySFX();
+
+              if (p > 0.75) {
+                setStatus('CH 03.5 // UNFILTERED STORY');
+                if (!declassified35) {
+                  setDeclassified35(true);
+                  sound.playDeclassifySFX();
+                }
+              } else {
+                setStatus('CH 04 // ENTERPRISE PROOF');
               }
             },
           },
@@ -295,21 +262,19 @@ export default function CinematicFiveChapters() {
       {/* ATMOSPHERIC SUN GLOW BACKGROUND */}
       <SunGlowOverlay progress={progress} />
 
+      {/* DREW FLOATING OVERLAY (GSAP QUICKTO CURSOR FOLLOWING) */}
+      <DrewFloatingOverlay />
+
       {/* Sound Toggle */}
       <button onClick={toggleSound} className="c5-sound-toggle">
         {isMuted ? 'SOUND: OFF' : '🔊 SOUND: ON'}
       </button>
 
-      {/* ── CHAPTER 1: INTRO SEQUENCE & THE ESSENCE ────────────── */}
+      {/* ── CHAPTER 1: THE ESSENCE ────────────────────────────── */}
       <div className="c5-pin-wrapper chap-1-pin">
         <section className="c5-stage">
           <div className="c5-content-narrow">
             <div className="c5-tag">CHAPTER 01 // THE ESSENCE</div>
-
-            {/* DREW INTRO HERO POSITION */}
-            <div id="drew-hero" style={{ marginBottom: '1.5rem' }}>
-              <DrewDrone isIntro={true} introStep={introStep} />
-            </div>
 
             <h1 className="c5-heading-large kinetic-headline">
               Industrial inspection still depends on{' '}
@@ -318,14 +283,6 @@ export default function CinematicFiveChapters() {
                 <span className="redaction-text">humans walking dangerous facilities.</span>
               </span>
             </h1>
-
-            {/* DREW CHAPTER 1 SCRIPTED NARRATIVE */}
-            <div style={{ marginTop: '1rem' }}>
-              <DrewDrone
-                quote="First, here's the problem I get sent in to solve."
-                subQuote="Industrial inspection still depends on humans walking into dangerous places."
-              />
-            </div>
 
             <p className="c5-text-body highlight" style={{ marginTop: '1.5rem' }}>
               Physical AI changes the equation—from reactive repairs after failure to continuous autonomous vigilance.
@@ -358,14 +315,6 @@ export default function CinematicFiveChapters() {
               <div className="c2-layer-fg c5-media-caption">
                 <span>LAT: -23.8647° | ELEVATION: 2,400M | SQM LITHIUM FACILITY</span>
               </div>
-            </div>
-
-            {/* DREW CHAPTER 2 SCRIPTED NARRATIVE */}
-            <div style={{ marginTop: '1.5rem' }}>
-              <DrewDrone
-                quote="This is Atacama, Chile. 2,400 meters up."
-                subQuote="I fly here so no one else has to climb it."
-              />
             </div>
           </div>
         </section>
@@ -405,11 +354,6 @@ export default function CinematicFiveChapters() {
               <div className="c5-scan-stage-badge">
                 STATUS: {scanStage}
               </div>
-
-              {/* DREW CHAPTER 3 SCRIPTED NARRATIVE */}
-              <div style={{ marginTop: '1rem' }}>
-                <DrewDrone quote="Watch — I'm scanning Holding Tank 4A right now." />
-              </div>
             </div>
           </div>
         </section>
@@ -425,12 +369,9 @@ export default function CinematicFiveChapters() {
               <div className="c5-proof-loc">📍 North Sea Offshore Rig</div>
               <h2 className="c5-proof-stat mechanical-font">SHELL PETROLEUM</h2>
               <div className="panel-metric">100X FLIGHT FREQUENCY</div>
-
-              {/* DREW CHAPTER 4 SCRIPTED NARRATIVE */}
-              <DrewDrone
-                quote="Shell didn't take my word for it either."
-                subQuote="Now they run flights 100x more often than before."
-              />
+              <p className="c5-proof-detail">
+                Shell operates fully autonomous dock flights on floating offshore oil platforms in heavy North Sea maritime weather.
+              </p>
             </div>
           </div>
 
@@ -460,23 +401,14 @@ export default function CinematicFiveChapters() {
             </div>
           </div>
 
-          {/* PANEL 4: THE TURN (DREW HOVERS QUIETLY IN MUTED MODE) */}
+          {/* PANEL 4: THE TURN (QUIET STRIPPED-BACK MOMENT) */}
           <div className="horizontal-panel panel-4">
             <div className="panel-inner text-center" style={{ background: '#000', border: '1px solid var(--mustard)' }}>
               <div className="c5-tag" style={{ color: 'var(--mustard)' }}>
                 THE TURN // WHAT THE CASE STUDY DOESN'T SHOW
               </div>
 
-              {/* DREW THE TURN SCRIPTED NARRATIVE (DESATURATED MUTED CLOUD) */}
-              <div style={{ margin: '1.5rem 0' }}>
-                <DrewDrone
-                  isTurn={true}
-                  quote="Can I be honest with you for a second?"
-                  subQuote="Not every flight worked the first time. There were failed pilots. Budget fights. Someone who almost said no."
-                />
-              </div>
-
-              <blockquote className="c5-silence-quote">
+              <blockquote className="c5-silence-quote" style={{ marginTop: '1.5rem' }}>
                 <span className={`redaction-wrapper inline ${declassified35 ? 'declassified' : ''}`}>
                   <span className="redaction-bar" />
                   <strong className="redaction-text">That part doesn't usually make it into the case study. At NestGen, it does.</strong>
@@ -494,13 +426,8 @@ export default function CinematicFiveChapters() {
             <div className="c5-tag" style={{ color: 'var(--ink)' }}>SEPTEMBER 29, 2026 · ONLINE GLOBAL SUMMIT</div>
             <h1 className="c5-reveal-title kinetic-headline">NESTGEN '26</h1>
 
-            {/* DREW CHOICE MOMENT NARRATIVE */}
-            <div style={{ margin: '1rem 0' }}>
-              <DrewDrone quote="Curious which industry this hits closest to home for you?" />
-            </div>
-
             {/* REAL INTERACTIVE INDUSTRY TARGET LOCK SELECTOR */}
-            <div className="c5-track-selector-title" style={{ marginTop: '1rem' }}>
+            <div className="c5-track-selector-title" style={{ marginTop: '1.5rem' }}>
               TARGET LOCK // SELECT AN INDUSTRY TRACK TO REVEAL CONFIRMED SPEAKERS & PLAYBOOKS:
             </div>
 
@@ -534,15 +461,7 @@ export default function CinematicFiveChapters() {
               </div>
             </div>
 
-            {/* DREW CLOSING CTA NARRATIVE */}
-            <div style={{ margin: '1.5rem 0' }}>
-              <DrewDrone
-                quote="That's everything I wanted to show you."
-                subQuote="September 29th, online — meet the people who actually built this with me."
-              />
-            </div>
-
-            <div style={{ marginTop: '2rem' }}>
+            <div style={{ marginTop: '2.5rem' }}>
               <a
                 href="https://nestgen.org"
                 target="_blank"
