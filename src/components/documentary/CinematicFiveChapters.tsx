@@ -6,6 +6,8 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import SplitType from 'split-type';
 import { useMissionStore } from '@/store/useMissionStore';
 import { sound } from '@/lib/sound';
+import IcarusGuide from '@/components/ui/IcarusGuide';
+import SunGlowOverlay from '@/components/ui/SunGlowOverlay';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -13,12 +15,13 @@ export default function CinematicFiveChapters() {
   const containerRef = useRef<HTMLDivElement>(null);
   const scanCanvasRef = useRef<HTMLCanvasElement>(null);
 
-  const { setProgress, setStatus } = useMissionStore();
+  const { progress, setProgress, setStatus } = useMissionStore();
 
   // States
   const [aiConfidence, setAiConfidence] = useState(12.0);
   const [scanStage, setScanStage] = useState('INITIALIZING');
   const [isThermal, setIsThermal] = useState(false);
+  const [chap4Step, setChap4Step] = useState(0);
   const [selectedTrack, setSelectedTrack] = useState<string>('Oil & Gas');
   const [isLockingTrack, setIsLockingTrack] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
@@ -105,24 +108,12 @@ export default function CinematicFiveChapters() {
         onUpdate: (self) => {
           const p = self.progress;
           setProgress(p * 0.2);
-          setStatus('CH 01 // THE ESSENCE');
+          setStatus('CH 01 // ICARUS HOOK');
 
           if (p > 0.6 && !declassified1) {
             setDeclassified1(true);
             sound.playDeclassifySFX();
           }
-        },
-      });
-
-      // Scrubbed parallax text movement in Chapter 1
-      gsap.to('.c1-scrub-text', {
-        y: -40,
-        opacity: 1,
-        scrollTrigger: {
-          trigger: '.chap-1-pin',
-          start: 'top top',
-          end: '+=3500',
-          scrub: 1,
         },
       });
 
@@ -136,29 +127,7 @@ export default function CinematicFiveChapters() {
         onUpdate: (self) => {
           const p = self.progress;
           setProgress(0.2 + p * 0.25);
-          setStatus('CH 02 // ATACAMA DISPATCH');
-        },
-      });
-
-      // Parallax depth scrub layers inside Chapter 2
-      gsap.to('.c2-layer-bg', {
-        scale: 1.35,
-        yPercent: -15,
-        scrollTrigger: {
-          trigger: '.chap-2-pin',
-          start: 'top top',
-          end: '+=4500',
-          scrub: 1,
-        },
-      });
-
-      gsap.to('.c2-layer-fg', {
-        yPercent: -35,
-        scrollTrigger: {
-          trigger: '.chap-2-pin',
-          start: 'top top',
-          end: '+=4500',
-          scrub: 1,
+          setStatus('CH 02 // ATACAMA ALTITUDE');
         },
       });
 
@@ -172,9 +141,8 @@ export default function CinematicFiveChapters() {
         onUpdate: (self) => {
           const p = self.progress;
           setProgress(0.45 + p * 0.25);
-          setStatus('CH 03 // LIVE EDGE AI SCANNER');
+          setStatus('CH 03 // SCANNER PRIDE');
 
-          // Number count-up tied directly to scrub
           const conf = Math.min(94.7, 12.0 + p * 82.7);
           setAiConfidence(parseFloat(conf.toFixed(1)));
 
@@ -193,10 +161,9 @@ export default function CinematicFiveChapters() {
         },
       });
 
-      // ── 5. CHAPTER 04: PINNED HORIZONTAL BREAKOUT (PPT-KILLER) ─
+      // ── 5. CHAPTER 04: PINNED HORIZONTAL BREAKOUT (4 PANELS) ─
       const mm = gsap.matchMedia();
 
-      // Desktop (>768px): Pinned Horizontal Panel Breakout
       mm.add('(min-width: 769px)', () => {
         const panels = gsap.utils.toArray<HTMLElement>('.horizontal-panel');
 
@@ -211,7 +178,7 @@ export default function CinematicFiveChapters() {
             onUpdate: (self) => {
               const p = self.progress;
               setProgress(0.7 + p * 0.15);
-              if (p > 0.8 && !declassified35) {
+              if (p > 0.75 && !declassified35) {
                 setDeclassified35(true);
                 sound.playDeclassifySFX();
               }
@@ -229,11 +196,10 @@ export default function CinematicFiveChapters() {
         scrub: 1,
         onUpdate: (self) => {
           setProgress(0.85 + self.progress * 0.15);
-          setStatus('CH 05 // NESTGEN BRIEFING');
+          setStatus('CH 05 // WINGS THAT DON’T MELT');
         },
       });
 
-      // Refresh ScrollTrigger after font & image load
       ScrollTrigger.refresh();
     }, containerRef);
 
@@ -287,12 +253,15 @@ export default function CinematicFiveChapters() {
 
   return (
     <div ref={containerRef} className="c5-container">
+      {/* ATMOSPHERIC SUN GLOW BACKGROUND (SCRUB-LINKED TO SCROLL) */}
+      <SunGlowOverlay progress={progress} />
+
       {/* Sound Toggle */}
       <button onClick={toggleSound} className="c5-sound-toggle">
         {isMuted ? 'SOUND: OFF' : '🔊 SOUND: ON'}
       </button>
 
-      {/* ── CHAPTER 1: WHY AUTONOMOUS INSPECTION MATTERS ──────── */}
+      {/* ── CHAPTER 1: THE ICARUS ARGUMENT ────────────────────── */}
       <div className="c5-pin-wrapper chap-1-pin">
         <section className="c5-stage">
           <div className="c5-content-narrow">
@@ -306,11 +275,10 @@ export default function CinematicFiveChapters() {
               </span>
             </h1>
 
-            <p className="c5-text-body c1-scrub-text">
-              Oil refineries. Mining sites. Power grids. Commercial ports. Millions of physical assets are inspected manually, leaving massive blind spots between cycles.
-            </p>
+            {/* ICARUS SCRIPTED NARRATIVE BUBBLE CH01 */}
+            <IcarusGuide quote="Icarus didn't fail because he flew. He failed because nothing could tell him how close was too close." />
 
-            <p className="c5-text-body highlight">
+            <p className="c5-text-body highlight" style={{ marginTop: '1.5rem' }}>
               Physical AI changes the equation—from reactive repairs after failure to continuous autonomous vigilance.
             </p>
 
@@ -322,7 +290,7 @@ export default function CinematicFiveChapters() {
         </section>
       </div>
 
-      {/* ── CHAPTER 2: PARALLAX ATACAMA DEPLOYMENT ────────────── */}
+      {/* ── CHAPTER 2: ATACAMA ALTITUDE (SQM CHILE) ────────────── */}
       <div className="c5-pin-wrapper chap-2-pin">
         <section className="c5-stage">
           <div className="c5-content-wide">
@@ -332,27 +300,24 @@ export default function CinematicFiveChapters() {
             </h2>
 
             <div className="c5-media-frame c2-parallax-box">
-              {/* Layer 1: Background Image (Slowest Scrub) */}
               <img
                 src="/photos/dock_mountain_terrain.png"
                 alt="Atacama Mining Facility"
                 className="c5-media-img c2-layer-bg"
               />
 
-              {/* Layer 2: Midground Data Overlay */}
               <div className="c2-layer-fg c5-media-caption">
                 <span>LAT: -23.8647° | ELEVATION: 2,400M | SQM LITHIUM FACILITY</span>
               </div>
             </div>
 
-            <p className="c5-text-body" style={{ marginTop: '2rem' }}>
-              In one of the world’s most desolate environments, manual leak inspection took days across vast evaporation ponds. Here, autonomous docks perform 24/7 BVLOS missions without human pilots.
-            </p>
+            {/* ICARUS SCRIPTED NARRATIVE BUBBLE CH02 */}
+            <IcarusGuide quote="2,400 meters up — closer to the sun than most people will ever stand. Here, nothing needs wax wings." />
           </div>
         </section>
       </div>
 
-      {/* ── CHAPTER 3: LIVE AI SCANNER (SCRUB COUNT-UP) ───────── */}
+      {/* ── CHAPTER 3: LIVE AI SCANNER (SHELL NORTH SEA) ───────── */}
       <div className="c5-pin-wrapper chap-3-pin">
         <section className="c5-stage c5-stage-dark">
           <div className="c5-inspection-grid">
@@ -387,15 +352,14 @@ export default function CinematicFiveChapters() {
                 STATUS: {scanStage}
               </div>
 
-              <div className="c5-quote-callout">
-                “World’s first fully autonomous drone operation on a floating offshore oil platform in the North Sea.”
-              </div>
+              {/* ICARUS SCRIPTED NARRATIVE BUBBLE CH03 */}
+              <IcarusGuide quote="A scan doesn't get tired. It doesn't lose its nerve at altitude, or fly on pride." />
             </div>
           </div>
         </section>
       </div>
 
-      {/* ── CHAPTER 04: PINNED HORIZONTAL BREAKOUT (THE PPT-KILLER) ── */}
+      {/* ── CHAPTER 04: PINNED HORIZONTAL BREAKOUT (PANELS) ────── */}
       <div className="chap-4-horizontal-wrapper">
         <div className="horizontal-panels-container">
           {/* PANEL 1: SHELL PETROLEUM */}
@@ -405,9 +369,9 @@ export default function CinematicFiveChapters() {
               <div className="c5-proof-loc">📍 North Sea Offshore Rig</div>
               <h2 className="c5-proof-stat mechanical-font">SHELL PETROLEUM</h2>
               <div className="panel-metric">100X FLIGHT FREQUENCY</div>
-              <p className="c5-proof-detail">
-                Shell operates fully autonomous dock flights on floating offshore oil platforms in heavy North Sea maritime weather.
-              </p>
+
+              {/* ICARUS SCRIPTED NARRATIVE BUBBLE CH04 */}
+              <IcarusGuide quote="Shell didn't need a myth. They needed 100x the flight frequency — and someone willing to prove the wings would hold." />
             </div>
           </div>
 
@@ -437,42 +401,39 @@ export default function CinematicFiveChapters() {
             </div>
           </div>
 
-          {/* PANEL 4: CHAPTER 03.5 UNFILTERED STORY (THE PAUSE) */}
+          {/* PANEL 4: THE TURN (QUIET STRIPPED-BACK MOMENT) */}
           <div className="horizontal-panel panel-4">
-            <div className="panel-inner text-center">
+            <div className="panel-inner text-center" style={{ background: '#000', border: '1px solid var(--mustard)' }}>
               <div className="c5-tag" style={{ color: 'var(--mustard)' }}>
-                CHAPTER 03.5 // WHAT THE CASE STUDY DOESN'T SHOW
+                THE TURN // WHAT THE CASE STUDY DOESN'T SHOW
               </div>
-              <blockquote className="c5-silence-quote">
-                “These wins didn't happen overnight.
-                <br /><br />
-                <span className="c5-quote-dim">
-                  There was a first pilot project that failed.
-                  <br />
-                  Months spent building the business case internally.
-                  <br />
-                  One person who finally said yes to the budget.
-                </span>
+
+              {/* ICARUS SCRIPTED NARRATIVE BUBBLE THE TURN */}
+              <blockquote className="c5-silence-quote" style={{ marginTop: '1rem' }}>
+                “Every story on this page has its own Icarus moment. A first flight that didn't work. A budget meeting someone almost walked out of. The wax that almost melted before it held.
                 <br /><br />
                 <span className={`redaction-wrapper inline ${declassified35 ? 'declassified' : ''}`}>
                   <span className="redaction-bar" />
                   <strong className="redaction-text">That part never makes the case study. At NestGen, it does.</strong>
-                </span>
+                </span>”
               </blockquote>
             </div>
           </div>
         </div>
       </div>
 
-      {/* ── CHAPTER 5: NESTGEN REVEAL & INTERACTIVE TARGET LOCK SELECTOR ── */}
+      {/* ── CHAPTER 5: NESTGEN REVEAL & CTA ────────────────────── */}
       <div className="c5-pin-wrapper chap-5-pin">
         <section className="c5-stage c5-stage-reveal">
           <div className="c5-content-wide" style={{ textAlign: 'center' }}>
             <div className="c5-tag" style={{ color: 'var(--ink)' }}>SEPTEMBER 29, 2026 · ONLINE GLOBAL SUMMIT</div>
             <h1 className="c5-reveal-title kinetic-headline">NESTGEN '26</h1>
 
+            {/* ICARUS CHOICE MOMENT BUBBLE */}
+            <IcarusGuide quote="Icarus only had one path, and it killed him. You get to pick yours." />
+
             {/* REAL INTERACTIVE INDUSTRY TARGET LOCK SELECTOR */}
-            <div className="c5-track-selector-title">
+            <div className="c5-track-selector-title" style={{ marginTop: '1.5rem' }}>
               TARGET LOCK // SELECT AN INDUSTRY TRACK TO REVEAL CONFIRMED SPEAKERS & PLAYBOOKS:
             </div>
 
@@ -506,12 +467,12 @@ export default function CinematicFiveChapters() {
               </div>
             </div>
 
-            {/* CLOSING THE NARRATIVE LOOP (ECHOING CHAPTER 01) */}
+            {/* ICARUS PAYOFF CTA */}
             <div className="c5-loop-quote">
-              “Chapter 01 showed why humans still walk into the danger. On September 29th, hear from the pioneers proving it doesn't have to stay that way.”
+              “For 2,000 years, flying too far meant risking everything. September 29th — meet the people who finally built wings that don't melt.”
             </div>
 
-            <div style={{ marginTop: '2.5rem' }}>
+            <div style={{ marginTop: '2rem' }}>
               <a
                 href="https://nestgen.org"
                 target="_blank"
