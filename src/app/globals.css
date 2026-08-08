@@ -542,26 +542,6 @@ img {
   left: 1.8rem;
 }
 
-.hud-logo-corner {
-  display: flex !important;
-  flex-direction: row !important;
-  align-items: center;
-  gap: 0.9rem;
-}
-
-.hud-brand-logo {
-  height: clamp(24px, 3.2vh, 32px);
-  width: auto;
-  object-fit: contain;
-  filter: drop-shadow(0 0 8px rgba(0,0,0,0.8));
-}
-
-.hud-logo-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-}
-
 .hud-corner.top-right {
   top: 1.2rem;
   right: 1.8rem;
@@ -1067,44 +1047,94 @@ img {
   backdrop-filter: blur(8px);
 }
 
-/* ── MOBILE RESPONSIVENESS & ACCESSIBILITY ───────────── */
+/* ── MOBILE RESPONSIVENESS & TOUCH SCROLL FIX ───────────── */
 @media (max-width: 768px) {
-  .c5-stage {
-    padding: 3.5rem 1.2rem 2rem !important;
+  body {
+    cursor: auto !important;
   }
+
+  .c5-pin-wrapper {
+    height: auto !important;
+    min-height: 100vh;
+  }
+
+  .c5-stage {
+    padding: 4.2rem 1.2rem 2rem !important;
+    min-height: 100vh !important;
+    height: auto !important;
+    overflow-y: visible !important;
+  }
+
+  .chap-4-horizontal-wrapper {
+    height: auto !important;
+    overflow: visible !important;
+    padding: 2.5rem 0 !important;
+  }
+
+  .chap-4-chip-header {
+    display: flex !important;
+    position: relative !important;
+    top: 0 !important;
+    left: 0 !important;
+    transform: none !important;
+    padding: 0.8rem 1rem !important;
+    margin-bottom: 1.5rem;
+    width: 100% !important;
+  }
+
+  .chip-header-row {
+    overflow-x: auto;
+    width: 100%;
+    justify-content: flex-start;
+    padding-bottom: 0.5rem;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .company-chip {
+    flex-shrink: 0;
+  }
+
   .horizontal-panels-container {
     flex-direction: column !important;
     width: 100vw !important;
     height: auto !important;
   }
+
   .horizontal-panel {
     width: 100vw !important;
     height: auto !important;
-    min-height: 80vh;
-    padding: 4rem 1.2rem !important;
+    min-height: max-content;
+    padding: 1.5rem 1rem !important;
+    margin-bottom: 2rem;
   }
+
   .horizontal-panel.panel-peeking {
     opacity: 1 !important;
     filter: none !important;
   }
+
+  .panel-inner {
+    padding: 1.8rem 1.2rem !important;
+  }
+
+  .chap-4-progress-dots {
+    display: none !important;
+  }
+
   .c5-inspection-grid {
     grid-template-columns: 1fr;
     height: auto;
   }
+
   .classified-hud-container {
     padding: 0.6rem 1rem;
     font-size: 0.38rem;
   }
-  .hud-brand-logo {
-    height: 22px;
-  }
+
   .drew-drone-container {
     flex-direction: column;
     align-items: center;
     text-align: center;
-  }
-  .chap-4-chip-header {
-    display: none;
   }
 }
 

@@ -89,6 +89,23 @@ export default function CinematicFiveChapters() {
     }, 280);
   };
 
+  // CHIP CLICK NAVIGATOR (WORKS ON DESKTOP & MOBILE)
+  const handleChipClick = (id: number) => {
+    setActivePanelIdx(id);
+    const chip = companyChips[id];
+    if (id === 5) {
+      setStatus('CH 03.5 // UNFILTERED TURN STORY');
+    } else {
+      setStatus(`CH 04 // ${chip.code} // ${chip.label}`);
+    }
+
+    // Scroll directly to target panel element on mobile
+    const panelEl = document.querySelector(`.horizontal-panel.panel-${id + 1}`);
+    if (panelEl && window.innerWidth <= 768) {
+      panelEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  };
+
   // FAST, SMOOTH CLICK-TO-DECLASSIFY HANDLERS
   const triggerDeclassifyCh1 = () => {
     if (isDeclassifiedCh1) return;
@@ -174,12 +191,12 @@ export default function CinematicFiveChapters() {
         }
       });
 
-      // 2. CHAPTER 01: THE ESSENCE (LIGHTWEIGHT 1800vh)
+      // 2. CHAPTER 01: THE ESSENCE
       ScrollTrigger.create({
         trigger: '.chap-1-pin',
         start: 'top top',
         end: '+=1800',
-        pin: true,
+        pin: window.innerWidth > 768,
         scrub: 0.8,
         onUpdate: (self) => {
           const p = self.progress;
@@ -188,12 +205,12 @@ export default function CinematicFiveChapters() {
         },
       });
 
-      // 3. CHAPTER 02: ATACAMA DISPATCH (LIGHTWEIGHT 2000vh)
+      // 3. CHAPTER 02: ATACAMA DISPATCH
       ScrollTrigger.create({
         trigger: '.chap-2-pin',
         start: 'top top',
         end: '+=2000',
-        pin: true,
+        pin: window.innerWidth > 768,
         scrub: 0.8,
         onUpdate: (self) => {
           const p = self.progress;
@@ -202,12 +219,12 @@ export default function CinematicFiveChapters() {
         },
       });
 
-      // 4. CHAPTER 03: LIVE AI SCANNER (LIGHTWEIGHT 2400vh)
+      // 4. CHAPTER 03: LIVE AI SCANNER
       ScrollTrigger.create({
         trigger: '.chap-3-pin',
         start: 'top top',
         end: '+=2400',
-        pin: true,
+        pin: window.innerWidth > 768,
         scrub: 0.8,
         onUpdate: (self) => {
           const p = self.progress;
@@ -232,9 +249,10 @@ export default function CinematicFiveChapters() {
         },
       });
 
-      // 5. CHAPTER 04: PINNED HORIZONTAL BREAKOUT WITH DYNAMIC COMPANY STATUS
+      // 5. CHAPTER 04: MATCHMEDIA DESKTOP PINNED HORIZONTAL VS MOBILE STACKED SCROLL
       const mm = gsap.matchMedia();
 
+      // DESKTOP: PINNED HORIZONTAL CAROUSEL
       mm.add('(min-width: 769px)', () => {
         const panels = gsap.utils.toArray<HTMLElement>('.horizontal-panel');
 
@@ -250,11 +268,9 @@ export default function CinematicFiveChapters() {
               const p = self.progress;
               setProgress(0.7 + p * 0.15);
 
-              // Update active panel index (0 to 5)
               const idx = Math.min(5, Math.floor(p * 5.99));
               setActivePanelIdx(idx);
 
-              // UPDATE MISSION STATUS SO DREW FEEDS THE RIGHT COMPANY CARD LINE!
               const currentChip = companyChips[idx];
               if (idx === 5) {
                 setStatus('CH 03.5 // UNFILTERED TURN STORY');
@@ -266,12 +282,37 @@ export default function CinematicFiveChapters() {
         });
       });
 
-      // 6. CHAPTER 05: NESTGEN REVEAL & CTA (LIGHTWEIGHT 1800vh)
+      // MOBILE (< 769px): NATURAL STACKED SCROLL WITH CARD SCROLL TRIGGER DETECT
+      mm.add('(max-width: 768px)', () => {
+        const panels = gsap.utils.toArray<HTMLElement>('.horizontal-panel');
+
+        panels.forEach((panel, idx) => {
+          ScrollTrigger.create({
+            trigger: panel,
+            start: 'top 65%',
+            end: 'bottom 35%',
+            onEnter: () => updateMobilePanel(idx),
+            onEnterBack: () => updateMobilePanel(idx),
+          });
+        });
+
+        function updateMobilePanel(idx: number) {
+          setActivePanelIdx(idx);
+          const currentChip = companyChips[idx];
+          if (idx === 5) {
+            setStatus('CH 03.5 // UNFILTERED TURN STORY');
+          } else {
+            setStatus(`CH 04 // ${currentChip.code} // ${currentChip.label}`);
+          }
+        }
+      });
+
+      // 6. CHAPTER 05: NESTGEN REVEAL & CTA
       ScrollTrigger.create({
         trigger: '.chap-5-pin',
         start: 'top top',
         end: '+=1800',
-        pin: true,
+        pin: window.innerWidth > 768,
         scrub: 0.8,
         onUpdate: (self) => {
           setProgress(0.85 + self.progress * 0.15);
@@ -460,13 +501,15 @@ export default function CinematicFiveChapters() {
           <div className="chip-header-label display-font">CLASSIFIED ENTERPRISE DOSSIERS // PROOF AT SCALE</div>
           <div className="chip-header-row">
             {companyChips.map((chip) => (
-              <div
+              <button
                 key={chip.id}
+                onClick={() => handleChipClick(chip.id)}
                 className={`company-chip ${activePanelIdx === chip.id ? 'active' : ''}`}
+                style={{ cursor: 'pointer', background: 'none', border: '1px solid var(--dark-border)' }}
               >
                 <span className="chip-indicator">{activePanelIdx === chip.id ? '●' : '○'}</span>
                 <span className="chip-title mono-font">{chip.label}</span>
-              </div>
+              </button>
             ))}
           </div>
         </div>
