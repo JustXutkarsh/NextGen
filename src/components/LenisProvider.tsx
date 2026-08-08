@@ -9,9 +9,9 @@ gsap.registerPlugin(ScrollTrigger);
 
 export default function LenisProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
-    // 1. Set up Lenis physics-based smooth scroll
+    // 1. Set up Lenis lightweight physics-based smooth scroll (0.75s duration for fast, smooth responsiveness)
     const lenis = new Lenis({
-      duration: 1.1,
+      duration: 0.75,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     });
 

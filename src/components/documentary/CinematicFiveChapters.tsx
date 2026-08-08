@@ -36,12 +36,12 @@ export default function CinematicFiveChapters() {
 
   // Company Chips Data for Chapter 04
   const companyChips = [
-    { id: 0, label: '01 // SHELL PETROLEUM', loc: 'North Sea Rig' },
-    { id: 1, label: '02 // SQM CHILE', loc: 'Atacama Desert' },
-    { id: 2, label: '03 // CSX RAILWAYS', loc: 'US Rail Mesh' },
-    { id: 3, label: '04 // ENBW & AIRBUS', loc: 'Europe Fleet' },
-    { id: 4, label: '05 // MPA SINGAPORE', loc: 'Global Ports' },
-    { id: 5, label: '06 // THE UNFILTERED TURN', loc: 'Internal Case Study' },
+    { id: 0, label: '01 // SHELL PETROLEUM', loc: 'North Sea Rig', code: 'SHELL' },
+    { id: 1, label: '02 // SQM CHILE', loc: 'Atacama Desert', code: 'SQM' },
+    { id: 2, label: '03 // CSX RAILWAYS', loc: 'US Rail Mesh', code: 'CSX' },
+    { id: 3, label: '04 // ENBW & AIRBUS', loc: 'Europe Fleet', code: 'ENBW' },
+    { id: 4, label: '05 // MPA SINGAPORE', loc: 'Global Ports', code: 'MPA' },
+    { id: 5, label: '06 // THE UNFILTERED TURN', loc: 'Internal Case Study', code: 'TURN' },
   ];
 
   // Industry Track Speakers Data
@@ -174,13 +174,13 @@ export default function CinematicFiveChapters() {
         }
       });
 
-      // 2. CHAPTER 01: THE ESSENCE (500vh)
+      // 2. CHAPTER 01: THE ESSENCE (LIGHTWEIGHT 1800vh)
       ScrollTrigger.create({
         trigger: '.chap-1-pin',
         start: 'top top',
-        end: '+=3500',
+        end: '+=1800',
         pin: true,
-        scrub: 1,
+        scrub: 0.8,
         onUpdate: (self) => {
           const p = self.progress;
           setProgress(p * 0.2);
@@ -188,13 +188,13 @@ export default function CinematicFiveChapters() {
         },
       });
 
-      // 3. CHAPTER 02: ATACAMA DISPATCH (700vh)
+      // 3. CHAPTER 02: ATACAMA DISPATCH (LIGHTWEIGHT 2000vh)
       ScrollTrigger.create({
         trigger: '.chap-2-pin',
         start: 'top top',
-        end: '+=4500',
+        end: '+=2000',
         pin: true,
-        scrub: 1,
+        scrub: 0.8,
         onUpdate: (self) => {
           const p = self.progress;
           setProgress(0.2 + p * 0.25);
@@ -202,13 +202,13 @@ export default function CinematicFiveChapters() {
         },
       });
 
-      // 4. CHAPTER 03: LIVE AI SCANNER (800vh)
+      // 4. CHAPTER 03: LIVE AI SCANNER (LIGHTWEIGHT 2400vh)
       ScrollTrigger.create({
         trigger: '.chap-3-pin',
         start: 'top top',
-        end: '+=5500',
+        end: '+=2400',
         pin: true,
-        scrub: 1,
+        scrub: 0.8,
         onUpdate: (self) => {
           const p = self.progress;
           setProgress(0.45 + p * 0.25);
@@ -232,7 +232,7 @@ export default function CinematicFiveChapters() {
         },
       });
 
-      // 5. CHAPTER 04: PINNED HORIZONTAL BREAKOUT WITH PEEKING PANELS
+      // 5. CHAPTER 04: PINNED HORIZONTAL BREAKOUT WITH DYNAMIC COMPANY STATUS
       const mm = gsap.matchMedia();
 
       mm.add('(min-width: 769px)', () => {
@@ -244,32 +244,35 @@ export default function CinematicFiveChapters() {
           scrollTrigger: {
             trigger: '.chap-4-horizontal-wrapper',
             pin: true,
-            scrub: 1,
-            end: () => '+=' + (panels.length * window.innerWidth * 0.85),
+            scrub: 0.8,
+            end: () => '+=' + (panels.length * window.innerWidth * 0.55),
             onUpdate: (self) => {
               const p = self.progress;
               setProgress(0.7 + p * 0.15);
 
+              // Update active panel index (0 to 5)
               const idx = Math.min(5, Math.floor(p * 5.99));
               setActivePanelIdx(idx);
 
+              // UPDATE MISSION STATUS SO DREW FEEDS THE RIGHT COMPANY CARD LINE!
+              const currentChip = companyChips[idx];
               if (idx === 5) {
-                setStatus('CH 03.5 // UNFILTERED STORY');
+                setStatus('CH 03.5 // UNFILTERED TURN STORY');
               } else {
-                setStatus(`CH 04 // ${companyChips[idx].label}`);
+                setStatus(`CH 04 // ${currentChip.code} // ${currentChip.label}`);
               }
             },
           },
         });
       });
 
-      // 6. CHAPTER 05: NESTGEN REVEAL & CTA
+      // 6. CHAPTER 05: NESTGEN REVEAL & CTA (LIGHTWEIGHT 1800vh)
       ScrollTrigger.create({
         trigger: '.chap-5-pin',
         start: 'top top',
-        end: '+=3500',
+        end: '+=1800',
         pin: true,
-        scrub: 1,
+        scrub: 0.8,
         onUpdate: (self) => {
           setProgress(0.85 + self.progress * 0.15);
           setStatus('CH 05 // NESTGEN BRIEFING');
@@ -588,7 +591,7 @@ export default function CinematicFiveChapters() {
         </div>
       </div>
 
-      {/* ── CHAPTER 5: NESTGEN REVEAL & CTA (WITH MAGNETIC BUTTON) ── */}
+      {/* ── CHAPTER 5: NESTGEN REVEAL & CTA ────────────────────── */}
       <div className="c5-pin-wrapper chap-5-pin">
         <section className="c5-stage c5-stage-reveal">
           <div className="c5-content-wide" style={{ textAlign: 'center' }}>

@@ -21,7 +21,7 @@ export default function DrewFloatingOverlay() {
     "Ready? Scroll down — let's go.",
   ];
 
-  // NARRATION LINES BASED ON SCROLL / MISSION STATUS
+  // DYNAMIC SPEECH LINES FOR EVERY CHAPTER & COMPANY PANEL
   const getSpeechLine = (): { quote: string; sub?: string; isTurn?: boolean } | null => {
     if (!isCursorEnabled) {
       return { quote: introLines[introStep] || introLines[0] };
@@ -39,24 +39,51 @@ export default function DrewFloatingOverlay() {
         sub: "I fly here so no one else has to climb it.",
       };
     }
-    if (activeStatus.includes('CH 03') || activeStatus.includes('LIVE AI') || activeStatus.includes('SCANNER')) {
+    if (activeStatus.includes('CH 03 //') || activeStatus.includes('LIVE AI') || activeStatus.includes('SCANNER')) {
       return {
         quote: "Watch — I'm scanning Holding Tank 4A right now.",
       };
     }
-    if (activeStatus.includes('CH 03.5') || activeStatus.includes('TURN') || activeStatus.includes('UNFILTERED')) {
+
+    // CHAPTER 04 INDIVIDUAL COMPANY PANEL LINES
+    if (activeStatus.includes('SHELL')) {
+      return {
+        quote: "Shell didn't take my word for it either.",
+        sub: "Now they run flights 100x more often than before in heavy North Sea weather.",
+      };
+    }
+    if (activeStatus.includes('SQM')) {
+      return {
+        quote: "SQM Lithium in Atacama cut leak detection from 3 days down to 90 minutes.",
+        sub: "Autonomous docks perform 24/7 BVLOS missions without human pilots.",
+      };
+    }
+    if (activeStatus.includes('CSX')) {
+      return {
+        quote: "CSX detects credit-card sized structural rail defects at 100ft altitude.",
+        sub: "They inspect high-speed tracks without shutting down live train schedules.",
+      };
+    }
+    if (activeStatus.includes('ENBW') || activeStatus.includes('AIRBUS')) {
+      return {
+        quote: "EnBW & Airbus cut perimeter security response times by 50%.",
+        sub: "Deploying autonomous fleets across European solar and industrial sites.",
+      };
+    }
+    if (activeStatus.includes('MPA') || activeStatus.includes('SINGAPORE')) {
+      return {
+        quote: "Singapore Port & UK Police dispatch first responders in under 90 seconds.",
+        sub: "Surveillance range expanded from 400 meters to 5 kilometers.",
+      };
+    }
+    if (activeStatus.includes('06') || activeStatus.includes('TURN') || activeStatus.includes('UNFILTERED')) {
       return {
         quote: "Can I be honest with you for a second?",
         sub: "Not every flight worked the first time. There were failed pilots. Budget fights. Someone who almost said no. That part doesn't usually make it into the case study. At NestGen, it does.",
         isTurn: true,
       };
     }
-    if (activeStatus.includes('CH 04') || activeStatus.includes('ENTERPRISE')) {
-      return {
-        quote: "Shell didn't take my word for it either.",
-        sub: "Now they run flights 100x more often than before.",
-      };
-    }
+
     if (activeStatus.includes('CH 05') || activeStatus.includes('NESTGEN BRIEFING')) {
       return {
         quote: "That's everything I wanted to show you.",
@@ -75,7 +102,6 @@ export default function DrewFloatingOverlay() {
     const body = bodyRef.current;
     if (!wrapper || !body) return;
 
-    // Initial Intro Swoop Sequence
     gsap.set(wrapper, {
       x: window.innerWidth * 0.35,
       y: window.innerHeight * 0.28,
@@ -97,7 +123,6 @@ export default function DrewFloatingOverlay() {
     const t2 = setTimeout(() => setIntroStep(2), 3000);
     const t3 = setTimeout(() => setIsCursorEnabled(true), 4500);
 
-    // Continuous Idle Bobbing & Rotation
     const idleTween = gsap.to(body, {
       y: '+=6',
       rotation: 2,
@@ -123,21 +148,20 @@ export default function DrewFloatingOverlay() {
     const wrapper = wrapperRef.current;
     const cloud = cloudRef.current;
 
-    const xTo = gsap.quickTo(wrapper, 'x', { duration: 0.45, ease: 'power3' });
-    const yTo = gsap.quickTo(wrapper, 'y', { duration: 0.45, ease: 'power3' });
+    const xTo = gsap.quickTo(wrapper, 'x', { duration: 0.4, ease: 'power3' });
+    const yTo = gsap.quickTo(wrapper, 'y', { duration: 0.4, ease: 'power3' });
 
     let cloudXTo: any = null;
     let cloudYTo: any = null;
     if (cloud) {
-      cloudXTo = gsap.quickTo(cloud, 'x', { duration: 0.3, ease: 'power3' });
-      cloudYTo = gsap.quickTo(cloud, 'y', { duration: 0.3, ease: 'power3' });
+      cloudXTo = gsap.quickTo(cloud, 'x', { duration: 0.25, ease: 'power3' });
+      cloudYTo = gsap.quickTo(cloud, 'y', { duration: 0.25, ease: 'power3' });
     }
 
     const handleMouseMove = (e: MouseEvent) => {
       xTo(e.clientX + 35);
       yTo(e.clientY + 25);
 
-      // MAGNETIC CLOUD PULL
       if (cloud && cloudXTo && cloudYTo) {
         const r = cloud.getBoundingClientRect();
         const relX = e.clientX - (r.left + r.width / 2);
@@ -192,7 +216,6 @@ export default function DrewFloatingOverlay() {
       }}
     >
       <div ref={bodyRef} className="drew-floating-body">
-        {/* SPEECH CLOUD BUBBLE WITH DREW SPECIAL ELITE FONT & MAGNETIC HOVER */}
         {speechData && (
           <div
             ref={cloudRef}
@@ -209,7 +232,6 @@ export default function DrewFloatingOverlay() {
           </div>
         )}
 
-        {/* ORIGINAL PIXEL-ART DRONE SPRITE */}
         <div className="drew-drone-sprite">
           <svg
             width="54"
