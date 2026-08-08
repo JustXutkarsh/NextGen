@@ -1,64 +1,69 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useMissionStore } from '@/store/useMissionStore';
 
 export default function CustomCursor() {
   const [pos, setPos] = useState({ x: -100, y: -100 });
-  const cursorMode = useMissionStore((s) => s.cursorMode);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isClicking, setIsClicking] = useState(false);
 
   useEffect(() => {
-    const handleMove = (e: MouseEvent) => {
+    const handleMouseMove = (e: MouseEvent) => {
       setPos({ x: e.clientX, y: e.clientY });
+
+      const target = e.target as HTMLElement | null;
+      if (
+        target &&
+        (target.tagName === 'BUTTON' ||
+          target.tagName === 'A' ||
+          target.closest('button') ||
+          target.closest('a') ||
+          target.classList.contains('interactive'))
+      ) {
+        setIsHovered(true);
+      } else {
+        setIsHovered(false);
+      }
     };
 
-    window.addEventListener('mousemove', handleMove);
-    return () => window.removeEventListener('mousemove', handleMove);
-  }, []);
+    const handleMouseDown = () => setIsClicking(true);
+    const handleMouseUp = () => setIsClicking(false);
 
-  const isCustomMode = cursorMode !== 'DEFAULT';
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mousedown', handleMouseDown);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, []);
 
   return (
     <>
+      {/* Central Crosshair Dot */}
       <div
-        className="cursor-ring"
+        className="target-reticle-dot"
         style={{
-          left: `${pos.x}px`,
-          top: `${pos.y}px`,
-          width: isCustomMode ? '48px' : '24px',
-          height: isCustomMode ? '48px' : '24px',
-          borderColor: isCustomMode ? 'var(--mustard)' : 'var(--cream)',
+          transform: `translate3d(${pos.x}px, ${pos.y}px, 0) scale(${isClicking ? 0.7 : 1})`,
         }}
       />
+
+      {/* Surveillance Bracket Reticle */}
       <div
-        className="cursor-dot"
+        className={`target-reticle-brackets ${isHovered ? 'hovered' : ''}`}
         style={{
-          left: `${pos.x}px`,
-          top: `${pos.y}px`,
+          transform: `translate3d(${pos.x}px, ${pos.y}px, 0) scale(${
+            isClicking ? 0.8 : isHovered ? 1.4 : 1
+          })`,
         }}
-      />
-      {isCustomMode && (
-        <div
-          className="cursor-label"
-          style={{
-            position: 'fixed',
-            left: `${pos.x + 28}px`,
-            top: `${pos.y - 12}px`,
-            fontFamily: 'var(--font-pixel)',
-            fontSize: '0.45rem',
-            color: 'var(--mustard)',
-            background: 'var(--dark-panel)',
-            border: '1px solid var(--mustard)',
-            padding: '2px 6px',
-            pointerEvents: 'none',
-            zIndex: 9999,
-            letterSpacing: '0.1em',
-            boxShadow: '0 0 10px rgba(0,0,0,0.8)',
-          }}
-        >
-          {cursorMode}
-        </div>
-      )}
+      >
+        <span className="b-tl" />
+        <span className="b-tr" />
+        <span className="b-bl" />
+        <span className="b-br" />
+      </div>
     </>
   );
 }

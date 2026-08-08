@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useMissionStore } from '@/store/useMissionStore';
 import { sound } from '@/lib/sound';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -10,6 +11,8 @@ gsap.registerPlugin(ScrollTrigger);
 export default function CinematicFiveChapters() {
   const containerRef = useRef<HTMLDivElement>(null);
   const scanCanvasRef = useRef<HTMLCanvasElement>(null);
+
+  const { setProgress, setStatus } = useMissionStore();
 
   // States
   const [chap1Step, setChap1Step] = useState(0);
@@ -19,7 +22,12 @@ export default function CinematicFiveChapters() {
   const [isThermal, setIsThermal] = useState(false);
   const [chap4Step, setChap4Step] = useState(0);
   const [selectedTrack, setSelectedTrack] = useState<string>('Oil & Gas');
+  const [isLockingTrack, setIsLockingTrack] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
+
+  // Redaction Declassifying States
+  const [declassified1, setDeclassified1] = useState(false);
+  const [declassified35, setDeclassified35] = useState(false);
 
   // Industry Track Speakers Data from NestGen26_Context.md
   const trackData: Record<string, { speakers: string[]; quote: string; photo: string }> = {
@@ -56,6 +64,16 @@ export default function CinematicFiveChapters() {
     sound.setMuted(next);
   };
 
+  const handleTrackSelect = (trackName: string) => {
+    if (selectedTrack === trackName) return;
+    setIsLockingTrack(true);
+    sound.playLockOnConfirmSFX();
+    setTimeout(() => {
+      setSelectedTrack(trackName);
+      setIsLockingTrack(false);
+    }, 280);
+  };
+
   useEffect(() => {
     const ctx = gsap.context(() => {
       // ── CHAPTER 1: WHY AUTONOMOUS INSPECTION MATTERS (500vh) ──
@@ -67,10 +85,21 @@ export default function CinematicFiveChapters() {
         scrub: 1,
         onUpdate: (self) => {
           const p = self.progress;
+          const globalP = p * 0.2;
+          setProgress(globalP);
+          setStatus('CH 01 // THE ESSENCE');
+
           if (p < 0.25) setChap1Step(0);
           else if (p < 0.55) setChap1Step(1);
-          else if (p < 0.85) setChap1Step(2);
-          else setChap1Step(3);
+          else if (p < 0.85) {
+            setChap1Step(2);
+            if (!declassified1) {
+              setDeclassified1(true);
+              sound.playDeclassifySFX();
+            }
+          } else {
+            setChap1Step(3);
+          }
         },
       });
 
@@ -83,6 +112,10 @@ export default function CinematicFiveChapters() {
         scrub: 1,
         onUpdate: (self) => {
           const p = self.progress;
+          const globalP = 0.2 + p * 0.25;
+          setProgress(globalP);
+          setStatus('CH 02 // ATACAMA DISPATCH');
+
           if (p < 0.2) setChap2Step(0);
           else if (p < 0.45) setChap2Step(1);
           else if (p < 0.7) setChap2Step(2);
@@ -100,6 +133,11 @@ export default function CinematicFiveChapters() {
         scrub: 1,
         onUpdate: (self) => {
           const p = self.progress;
+          const globalP = 0.45 + p * 0.25;
+          setProgress(globalP);
+          setStatus('CH 03 // LIVE EDGE AI SCANNER');
+
+          // Mechanical sharp count ticker: 12.0% -> 94.7%
           const conf = Math.min(94.7, 12.0 + p * 82.7);
           setAiConfidence(parseFloat(conf.toFixed(1)));
 
@@ -115,7 +153,7 @@ export default function CinematicFiveChapters() {
           }
 
           if (p > 0.05 && p < 0.95) {
-            sound.playScanBeep();
+            sound.playMechanicalTick();
           }
         },
       });
@@ -129,10 +167,26 @@ export default function CinematicFiveChapters() {
         scrub: 1,
         onUpdate: (self) => {
           const p = self.progress;
-          if (p < 0.35) setChap4Step(0);      // CHAPTER 03.5: What the Case Study Doesn't Show
-          else if (p < 0.6) setChap4Step(1); // Shell Case
-          else if (p < 0.82) setChap4Step(2); // SQM Case
-          else setChap4Step(3);               // CSX Case
+          const globalP = 0.7 + p * 0.15;
+          setProgress(globalP);
+
+          if (p < 0.35) {
+            setChap4Step(0);
+            setStatus('CH 03.5 // UNFILTERED STORY');
+            if (!declassified35) {
+              setDeclassified35(true);
+              sound.playDeclassifySFX();
+            }
+          } else if (p < 0.6) {
+            setChap4Step(1);
+            setStatus('CH 04 // ENTERPRISE PROOF');
+          } else if (p < 0.82) {
+            setChap4Step(2);
+            setStatus('CH 04 // ENTERPRISE PROOF');
+          } else {
+            setChap4Step(3);
+            setStatus('CH 04 // ENTERPRISE PROOF');
+          }
         },
       });
 
@@ -143,11 +197,17 @@ export default function CinematicFiveChapters() {
         end: '+=3500',
         pin: true,
         scrub: 1,
+        onUpdate: (self) => {
+          const p = self.progress;
+          const globalP = 0.85 + p * 0.15;
+          setProgress(globalP);
+          setStatus('CH 05 // NESTGEN BRIEFING');
+        },
       });
     }, containerRef);
 
     return () => ctx.revert();
-  }, []);
+  }, [declassified1, declassified35, setProgress, setStatus]);
 
   // Canvas Laser Scanner Render for Chapter 3
   useEffect(() => {
@@ -196,8 +256,9 @@ export default function CinematicFiveChapters() {
 
   return (
     <div ref={containerRef} className="c5-container">
+      {/* Audio Sound Toggle */}
       <button onClick={toggleSound} className="c5-sound-toggle">
-        {isMuted ? 'SOUND: OFF' : 'SOUND: ON'}
+        {isMuted ? 'SOUND: OFF' : '🔊 SOUND: ON'}
       </button>
 
       {/* ── CHAPTER 1: WHY AUTONOMOUS INSPECTION MATTERS (500vh) ── */}
@@ -207,8 +268,12 @@ export default function CinematicFiveChapters() {
             <div className="c5-tag">CHAPTER 01 // THE ESSENCE</div>
 
             {chap1Step >= 0 && (
-              <h1 className="c5-heading-large">
-                Industrial inspection still depends on humans walking dangerous facilities.
+              <h1 className="c5-heading-large kinetic-text">
+                Industrial inspection still depends on{' '}
+                <span className={`redaction-wrapper ${declassified1 ? 'declassified' : ''}`}>
+                  <span className="redaction-bar" />
+                  <span className="redaction-text">humans walking dangerous facilities.</span>
+                </span>
               </h1>
             )}
 
@@ -234,7 +299,7 @@ export default function CinematicFiveChapters() {
         </section>
       </div>
 
-      {/* ── CHAPTER 2: JOURNEY INTO A REAL FACILITY - CHILE (MINING ONLY) (700vh) ── */}
+      {/* ── CHAPTER 2: JOURNEY INTO A REAL FACILITY - CHILE (700vh) ── */}
       <div className="c5-pin-wrapper chap-2-pin">
         <section className="c5-stage">
           <div className="c5-content-wide">
@@ -242,14 +307,13 @@ export default function CinematicFiveChapters() {
             <h2 className="c5-heading-medium">SQM Lithium Facility · Atacama Desert, Chile (2,400m Elevation)</h2>
 
             <div className="c5-media-frame">
-              {/* Uses MINING ONLY imagery: dock_mountain_terrain.png & site_gallery_07.png */}
               <img
                 src={chap2Step >= 3 ? '/photos/site_gallery_07.png' : '/photos/dock_mountain_terrain.png'}
                 alt="Atacama Mining Facility"
                 className="c5-media-img"
                 style={{
                   transform: chap2Step === 1 ? 'scale(1.15)' : chap2Step >= 2 ? 'scale(1.3)' : 'scale(1)',
-                  transition: 'transform 1s ease-out',
+                  transition: 'transform 1s cubic-bezier(0.25, 1, 0.5, 1)',
                 }}
               />
 
@@ -278,7 +342,6 @@ export default function CinematicFiveChapters() {
         <section className="c5-stage c5-stage-dark">
           <div className="c5-inspection-grid">
             <div className="c5-inspection-media">
-              {/* Reserved EXCLUSIVELY for Shell Oil & Gas North Sea */}
               <img
                 src="/photos/oilgas_dashboard.png"
                 alt="North Sea Platform Inspection"
@@ -298,8 +361,8 @@ export default function CinematicFiveChapters() {
               <h3 className="c5-sidebar-title">Scanning Storage Tank 4A</h3>
 
               <div className="c5-confidence-box">
-                <span className="c5-confidence-label">CONFIDENCE RATING</span>
-                <span className="c5-confidence-val">{aiConfidence}%</span>
+                <span className="c5-confidence-label">CONFIDENCE RATING (MECHANICAL TICKER)</span>
+                <span className="c5-confidence-val mechanical-font">{aiConfidence}%</span>
                 <div className="c5-confidence-bar">
                   <div className="c5-confidence-fill" style={{ width: `${aiConfidence}%` }} />
                 </div>
@@ -337,7 +400,10 @@ export default function CinematicFiveChapters() {
                   One person who finally said yes to the budget.
                 </span>
                 <br /><br />
-                <strong>That part never makes the case study. At NestGen, it does.</strong>”
+                <span className={`redaction-wrapper inline ${declassified35 ? 'declassified' : ''}`}>
+                  <span className="redaction-bar" />
+                  <strong className="redaction-text">That part never makes the case study. At NestGen, it does.</strong>
+                </span>
               </blockquote>
             </div>
           ) : (
@@ -363,7 +429,7 @@ export default function CinematicFiveChapters() {
                   <div className="c5-proof-loc">
                     📍 {chap4Step === 1 ? 'North Sea Offshore Rig' : chap4Step === 2 ? 'Atacama Desert, Chile' : 'United States Rail Mesh'}
                   </div>
-                  <h3 className="c5-proof-stat">
+                  <h3 className="c5-proof-stat mechanical-font">
                     {chap4Step === 1 ? '100X Flight Frequency' : chap4Step === 2 ? '90 Min Leak Detection' : 'Credit-Card Rail Defects'}
                   </h3>
                   <p className="c5-proof-detail">
@@ -380,32 +446,32 @@ export default function CinematicFiveChapters() {
         </section>
       </div>
 
-      {/* ── CHAPTER 5: NESTGEN REVEAL & INTERACTIVE TRACK SELECTOR (500vh) ───── */}
+      {/* ── CHAPTER 5: NESTGEN REVEAL & INTERACTIVE TARGET LOCK SELECTOR (500vh) ── */}
       <div className="c5-pin-wrapper chap-5-pin">
         <section className="c5-stage c5-stage-reveal">
           <div className="c5-content-wide" style={{ textAlign: 'center' }}>
             <div className="c5-tag" style={{ color: 'var(--ink)' }}>SEPTEMBER 29, 2026 · ONLINE GLOBAL SUMMIT</div>
             <h1 className="c5-reveal-title">NESTGEN '26</h1>
 
-            {/* REAL INTERACTIVE INDUSTRY TRACK SELECTOR */}
+            {/* REAL INTERACTIVE INDUSTRY TARGET LOCK SELECTOR */}
             <div className="c5-track-selector-title">
-              SELECT YOUR INDUSTRY TRACK TO REVEAL CONFIRMED SPEAKERS & PLAYBOOKS:
+              TARGET LOCK // SELECT AN INDUSTRY TRACK TO REVEAL CONFIRMED SPEAKERS & PLAYBOOKS:
             </div>
 
             <div className="c5-track-buttons">
               {Object.keys(trackData).map((track) => (
                 <button
                   key={track}
-                  onClick={() => setSelectedTrack(track)}
-                  className={`c5-track-btn ${selectedTrack === track ? 'active' : ''}`}
+                  onClick={() => handleTrackSelect(track)}
+                  className={`c5-track-btn ${selectedTrack === track ? 'active' : ''} ${isLockingTrack ? 'locking' : ''}`}
                 >
-                  {track}
+                  <span className="track-icon">🎯</span> {track}
                 </button>
               ))}
             </div>
 
-            {/* TRACK DETAILS DISPLAY */}
-            <div className="c5-track-display">
+            {/* TARGET LOCK DISPLAY PANEL */}
+            <div className={`c5-track-display ${isLockingTrack ? 'target-locking' : ''}`}>
               <div className="c5-track-speakers">
                 <span className="c5-track-label">CONFIRMED SPEAKERS FOR {selectedTrack.toUpperCase()}:</span>
                 <div className="c5-speaker-roster">
