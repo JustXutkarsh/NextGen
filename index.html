@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NESTGEN '26 — The Physical AI Summit · September 29</title>
+    <meta name="description" content="One stage. One day. The world's biggest names in Physical AI — walking through the playbooks they never share publicly. NestGen '26, online, September 29.">
+    <meta property="og:title" content="NESTGEN '26 — The Physical AI Summit">
+    <meta property="og:description" content="Shell. Airbus. UK Police. SQM. One day a year, the boardroom goes public.">
+    <meta property="og:type" content="website">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto+Mono:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Skip link -->
+    <a href="#main-content" class="skip-link">Skip to content</a>
+
+    <!-- Custom cursor -->
+    <div class="cursor" id="cursor" aria-hidden="true"></div>
+    <div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
+
+    <!-- Left-side chapter progress bar -->
+    <nav class="chapter-nav" aria-label="Chapter navigation">
+        <div class="chapter-track">
+            <div class="chapter-fill" id="chapterFill"></div>
+        </div>
+        <ol class="chapter-dots-list">
+            <li><button class="chapter-dot active" data-target="chapter-0" title="Cold Open" aria-label="Go to Cold Open"></button></li>
+            <li><button class="chapter-dot" data-target="chapter-1" title="The Brief" aria-label="Go to The Brief"></button></li>
+            <li><button class="chapter-dot" data-target="chapter-2" title="Industries" aria-label="Go to Industries"></button></li>
+            <li><button class="chapter-dot" data-target="chapter-3" title="The Truth" aria-label="Go to The Truth"></button></li>
+            <li><button class="chapter-dot" data-target="chapter-4" title="Speakers" aria-label="Go to Speakers"></button></li>
+            <li><button class="chapter-dot" data-target="chapter-5" title="FlytBase" aria-label="Go to FlytBase"></button></li>
+            <li><button class="chapter-dot" data-target="chapter-6" title="Register" aria-label="Go to Register"></button></li>
+        </ol>
+    </nav>
+
+    <!-- Site navigation -->
+    <header class="site-header" id="siteHeader" role="banner">
+        <div class="nav-brand">
+            <span class="nav-wordmark">flytbase</span>
+            <span class="nav-pipe" aria-hidden="true">|</span>
+            <span class="nav-event-name">NESTGEN '26</span>
+        </div>
+        <a href="#chapter-6" class="nav-register-btn" id="navRegisterBtn">REGISTER NOW</a>
+    </header>
+
+    <main id="main-content">
+
+        <!-- ═══════════════════════════════════════
+             CHAPTER 0 · COLD OPEN
+             "This is not a website. This is a dispatch log."
+        ═══════════════════════════════════════ -->
+        <section class="chapter chapter-0" id="chapter-0" data-chapter-index="0" aria-label="Cold Open">
+            <div class="terminal-wrap">
+                <div class="terminal-window" role="log" aria-live="polite" aria-label="FlytBase command center dispatch log">
+                    <div class="terminal-titlebar" aria-hidden="true">
+                        <div class="terminal-dots">
+                            <span class="tdot tdot-red"></span>
+                            <span class="tdot tdot-yellow"></span>
+                            <span class="tdot tdot-green"></span>
+                        </div>
+                        <span class="terminal-title-text">FLYTBASE COMMAND CENTER · LIVE FEED</span>
+                        <span class="terminal-status-dot" aria-hidden="true"></span>
+                    </div>
+                    <div class="terminal-body">
+                        <div class="terminal-line" id="tl-1" aria-hidden="true">
+                            <span class="t-prompt">&gt;</span>
+                            <span class="t-text" id="tt-1"></span>
+                        </div>
+                        <div class="terminal-line" id="tl-2" aria-hidden="true">
+                            <span class="t-prompt">&gt;</span>
+                            <span class="t-text" id="tt-2"></span>
+                        </div>
+                        <div class="terminal-line" id="tl-3" aria-hidden="true">
+                            <span class="t-prompt">&gt;</span>
+                            <span class="t-text" id="tt-3"></span>
+                        </div>
+                        <div class="terminal-line" id="tl-4" aria-hidden="true">
+                            <span class="t-prompt t-alert">&gt;</span>
+                            <span class="t-text t-alert" id="tt-4"></span>
+                        </div>
+                        <div class="terminal-line terminal-cursor-line" id="tl-cursor" aria-hidden="true">
+                            <span class="t-prompt">&gt;</span>
+                            <span class="t-cursor" id="termCursor">█</span>
+                        </div>
+                    </div>
+                    <div class="terminal-reveal" id="termReveal" aria-hidden="true">
+                        <p class="terminal-revelation">
+                            THIS IS HAPPENING RIGHT NOW.<br>
+                            AT MINES. AT PORTS. AT POWER GRIDS.<br>
+                            WITHOUT ANYONE WATCHING.
+                        </p>
+                        <div class="scroll-indicator">
+                            <span class="scroll-label">SCROLL TO SEE HOW</span>
+                            <div class="scroll-arrow-wrap" aria-hidden="true">
+                                <span class="scroll-arrow">↓</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- ambient background image -->
+                <div class="hero-bg-image" aria-hidden="true">
+                    <img src="photos/01_platform_dashboard_overview.png" alt="" loading="eager">
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════
+             CHAPTER 1 · THE BRIEF
+             "Physical AI. Already deployed. Nobody sent the memo."
+        ═══════════════════════════════════════ -->
+        <section class="chapter chapter-1 dot-bg" id="chapter-1" data-chapter-index="1" aria-label="The Mission Brief">
+            <div class="chapter-inner">
+                <div class="chapter-label reveal-up">01 / THE BRIEF</div>
+                <h1 class="chapter-headline reveal-up delay-1">
+                    THE WORLD'S MOST IMPORTANT MACHINES DON'T NEED OPERATORS.
+                </h1>
+                <div class="brief-columns">
+                    <p class="body-text reveal-up delay-2">
+                        Physical AI isn't coming. It's already running. At copper mines in Zambia. On floating oil platforms in the North Sea. At solar farms in Germany. At train yards across the United States.
+                    </p>
+                    <p class="body-text reveal-up delay-3">
+                        A drone wakes itself up on a schedule — or the second something triggers it. Flies its route. Looks at what it needs to look at. Comes home. Charges itself for the next flight. No pilot standing there with a remote. No operator on call. Just the machine doing the work.
+                    </p>
+                </div>
+
+                <div class="stats-grid">
+                    <article class="stat-card reveal-up delay-1">
+                        <div class="stat-num" data-target="60" data-suffix="%" aria-label="60 percent">0%</div>
+                        <div class="stat-label">SECURITY COSTS CUT</div>
+                        <div class="stat-source">Titan Protection</div>
+                    </article>
+                    <article class="stat-card reveal-up delay-2">
+                        <div class="stat-num" data-target="90" data-suffix=" MIN" aria-label="90 minutes">0 MIN</div>
+                        <div class="stat-label">LEAK DETECTION TIME</div>
+                        <div class="stat-source">SQM · Atacama Desert, Chile</div>
+                    </article>
+                    <article class="stat-card reveal-up delay-3">
+                        <div class="stat-num" data-target="7" data-suffix=" MIN" aria-label="7 minutes">0 MIN</div>
+                        <div class="stat-label">FASTER RESCUE RESPONSE</div>
+                        <div class="stat-source">BF Kiel · Germany</div>
+                    </article>
+                    <article class="stat-card reveal-up delay-1">
+                        <div class="stat-num" data-target="4" data-suffix="×" aria-label="4 times">0×</div>
+                        <div class="stat-label">IODINE YIELD INCREASE</div>
+                        <div class="stat-source">SQM · Lithium Mine</div>
+                    </article>
+                    <article class="stat-card reveal-up delay-2">
+                        <div class="stat-num" data-target="5" data-suffix=" KM" aria-label="5 kilometers">0 KM</div>
+                        <div class="stat-label">SURVEILLANCE RANGE</div>
+                        <div class="stat-source">MPA Singapore · 400m before</div>
+                    </article>
+                    <article class="stat-card reveal-up delay-3">
+                        <div class="stat-num stat-num-sm" data-target-text="1 GW" aria-label="1 gigawatt">1 GW</div>
+                        <div class="stat-label">SOLAR INSPECTED</div>
+                        <div class="stat-source">EnBW · Just 2 Docks</div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════
+             CHAPTER 2 · INDUSTRIES
+             "Nine industries. Nine different stories. One idea."
+        ═══════════════════════════════════════ -->
+        <section class="chapter chapter-2 dot-bg" id="chapter-2" data-chapter-index="2" aria-label="Industries">
+            <div class="chapter-inner">
+                <div class="chapter-label reveal-up">02 / THE PLAYBOOK THEY NEVER SHARED</div>
+                <h2 class="chapter-headline reveal-up delay-1">NINE INDUSTRIES. NINE STORIES. ONE IDEA.</h2>
+                <p class="body-text reveal-up delay-2">Once you see how one industry built this, you start seeing how yours could too.</p>
+
+                <div class="industry-grid">
+
+                    <article class="industry-card reveal-up delay-1">
+                        <div class="industry-img-wrap">
+                            <img src="photos/02_drone_software_console.png"
+                                 alt="FlytBase command center: Fire alarm Zone C auto-dispatched, drone responding with live thermal feeds"
+                                 loading="lazy">
+                            <div class="img-badge">LIVE MISSION</div>
+                        </div>
+                        <div class="industry-body">
+                            <div class="industry-header">
+                                <span class="industry-icon" aria-hidden="true">🚔</span>
+                                <span class="industry-name">PUBLIC SAFETY</span>
+                            </div>
+                            <div class="industry-metric">
+                                <span class="metric-val">7 MIN</span>
+                                <span class="metric-desc">faster to a water rescue</span>
+                            </div>
+                            <p class="industry-copy">A fire. An alarm. A drone airborne before a patrol car leaves the station. Streaming video before anyone arrives.</p>
+                            <div class="industry-credit">BF Kiel · Germany</div>
+                        </div>
+                    </article>
+
+                    <article class="industry-card reveal-up delay-2">
+                        <div class="industry-img-wrap">
+                            <img src="photos/verkos_security_dashboard.png"
+                                 alt="Verkos AI security platform: multi-camera perimeter monitoring, AI threat detection, post-mission forensics"
+                                 loading="lazy">
+                            <div class="img-badge">AI AGENT</div>
+                        </div>
+                        <div class="industry-body">
+                            <div class="industry-header">
+                                <span class="industry-icon" aria-hidden="true">🛡️</span>
+                                <span class="industry-name">SECURITY</span>
+                            </div>
+                            <div class="industry-metric">
+                                <span class="metric-val">60%</span>
+                                <span class="metric-desc">security cost reduction</span>
+                            </div>
+                            <p class="industry-copy">Instead of a guard walking the fence at 2am, a drone does the rounds. And it doesn't miss anything.</p>
+                            <div class="industry-credit">Titan Protection</div>
+                        </div>
+                    </article>
+
+                    <article class="industry-card reveal-up delay-3">
+                        <div class="industry-img-wrap">
+                            <img src="photos/oilgas_dashboard.png"
+                                 alt="Tank TK-47 inspection: Severe Corrosion AI-detected, work order created in one click — oil and gas autonomous inspection"
+                                 loading="lazy">
+                            <div class="img-badge">AI INSIGHT</div>
+                        </div>
+                        <div class="industry-body">
+                            <div class="industry-header">
+                                <span class="industry-icon" aria-hidden="true">🛢️</span>
+                                <span class="industry-name">OIL &amp; GAS</span>
+                            </div>
+                            <div class="industry-metric">
+                                <span class="metric-val">100×</span>
+                                <span class="metric-desc">more flights per site</span>
+                            </div>
+                            <p class="industry-copy">The world's first fully autonomous drone operation. On a floating offshore platform. In the North Sea.</p>
+                            <div class="industry-credit">Shell Petroleum</div>
+                        </div>
+                    </article>
+
+                    <article class="industry-card reveal-up delay-1">
+                        <div class="industry-img-wrap">
+                            <img src="photos/construction_dashboard.png"
+                                 alt="Aerial construction site with autonomous mission scheduler — daily surveillance without on-site staff"
+                                 loading="lazy">
+                            <div class="img-badge">SCHEDULED</div>
+                        </div>
+                        <div class="industry-body">
+                            <div class="industry-header">
+                                <span class="industry-icon" aria-hidden="true">🏗️</span>
+                                <span class="industry-name">CONSTRUCTION</span>
+                            </div>
+                            <div class="industry-metric">
+                                <span class="metric-val">15 MIN</span>
+                                <span class="metric-desc">vs. 2-hour reports before</span>
+                            </div>
+                            <p class="industry-copy">Daily aerial reports. Zero staff physically on site. Every change flagged before it becomes a problem.</p>
+                            <div class="industry-credit">Ibn Firnas · Oman</div>
+                        </div>
+                    </article>
+
+                    <article class="industry-card reveal-up delay-2">
+                        <div class="industry-img-wrap">
+                            <img src="photos/electricutilities_dashboard.png"
+                                 alt="Four-panel video wall: power lines, thermal close-up of insulator, substation aerial — one operator, four sites"
+                                 loading="lazy">
+                            <div class="img-badge">MULTI-SITE</div>
+                        </div>
+                        <div class="industry-body">
+                            <div class="industry-header">
+                                <span class="industry-icon" aria-hidden="true">⚡</span>
+                                <span class="industry-name">ELECTRIC UTILITIES</span>
+                            </div>
+                            <div class="industry-metric">
+                                <span class="metric-val">1 GW</span>
+                                <span class="metric-desc">inspected · 2 docks only</span>
+                            </div>
+                            <p class="industry-copy">Power grids checked on schedule. Wildfire risk flagged as it develops — not after it has already started.</p>
+                            <div class="industry-credit">EnBW · Germany</div>
+                        </div>
+                    </article>
+
+                    <article class="industry-card reveal-up delay-3">
+                        <div class="industry-img-wrap">
+                            <img src="photos/generic_platform_feed.png"
+                                 alt="FlytBase autonomous fleet operations platform — active alarm response at mining site with thermal imaging"
+                                 loading="lazy">
+                            <div class="img-badge">AUTONOMOUS</div>
+                        </div>
+                        <div class="industry-body">
+                            <div class="industry-header">
+                                <span class="industry-icon" aria-hidden="true">⛰️</span>
+                                <span class="industry-name">MINING</span>
+                            </div>
+                            <div class="industry-metric">
+                                <span class="metric-val">4×</span>
+                                <span class="metric-desc">iodine yield increase</span>
+                            </div>
+                            <p class="industry-copy">A leak in the Atacama. Would have taken a week to find. Found in 90 minutes. The whole system paid for itself in under a year.</p>
+                            <div class="industry-credit">SQM · Chile</div>
+                        </div>
+                    </article>
+
+                    <article class="industry-card reveal-up delay-1">
+                        <div class="industry-img-wrap">
+                            <img src="photos/railyard_corrosion_dashboard.png"
+                                 alt="Aerial railyard: AI detects severe corrosion with bounding box — defects as small as a credit card caught from 100 feet"
+                                 loading="lazy">
+                            <div class="img-badge">AI DETECTED</div>
+                        </div>
+                        <div class="industry-body">
+                            <div class="industry-header">
+                                <span class="industry-icon" aria-hidden="true">🚂</span>
+                                <span class="industry-name">TRANSPORTATION</span>
+                            </div>
+                            <div class="industry-metric">
+                                <span class="metric-val credit-card-val">CREDIT CARD</span>
+                                <span class="metric-desc">size defects · caught from 100ft</span>
+                            </div>
+                            <p class="industry-copy">Rail defects the width of a credit card. Detected from 100 feet in the air. Without shutting down the tracks.</p>
+                            <div class="industry-credit">CSX Transportation</div>
+                        </div>
+                    </article>
+
+                    <article class="industry-card reveal-up delay-2">
+                        <div class="industry-img-wrap">
+                            <img src="photos/site_gallery_04.png"
+                                 alt="Drone dock deployed at large solar farm — EnBW scaled from 150MW to 1 gigawatt inspection using just two docks"
+                                 loading="lazy">
+                            <div class="img-badge">DEPLOYED</div>
+                        </div>
+                        <div class="industry-body">
+                            <div class="industry-header">
+                                <span class="industry-icon" aria-hidden="true">☀️</span>
+                                <span class="industry-name">SOLAR</span>
+                            </div>
+                            <div class="industry-metric">
+                                <span class="metric-val">150MW→1GW</span>
+                                <span class="metric-desc">no extra staff</span>
+                            </div>
+                            <p class="industry-copy">Scaled solar inspections 6× in scale. Two docks. No new staff. Failing panels caught weeks before they cause downtime.</p>
+                            <div class="industry-credit">EnBW · Germany</div>
+                        </div>
+                    </article>
+
+                    <article class="industry-card reveal-up delay-3">
+                        <div class="industry-img-wrap">
+                            <img src="photos/03_fleet_view.png"
+                                 alt="FlytBase fleet view: multiple drones tracked simultaneously over port — MPA Singapore surveillance range 400m to 5km"
+                                 loading="lazy">
+                            <div class="img-badge">FLEET ACTIVE</div>
+                        </div>
+                        <div class="industry-body">
+                            <div class="industry-header">
+                                <span class="industry-icon" aria-hidden="true">🚢</span>
+                                <span class="industry-name">MARITIME</span>
+                            </div>
+                            <div class="industry-metric">
+                                <span class="metric-val">5 KM</span>
+                                <span class="metric-desc">range · was 400m</span>
+                            </div>
+                            <p class="industry-copy">Port alarm. Drone on-scene in under 90 seconds. Surveillance range stretched 12× with no additional personnel.</p>
+                            <div class="industry-credit">MPA Singapore</div>
+                        </div>
+                    </article>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════
+             CHAPTER 3 · THE HUMAN TRUTH
+             "Companies almost never talk about this stuff in public."
+        ═══════════════════════════════════════ -->
+        <section class="chapter chapter-3" id="chapter-3" data-chapter-index="3" aria-label="The Human Truth">
+            <div class="chapter-inner">
+                <div class="chapter-label light reveal-up">03 / THE TRUTH</div>
+                <h2 class="truth-headline reveal-up delay-1">
+                    COMPANIES ALMOST NEVER TALK ABOUT THIS STUFF IN PUBLIC.
+                </h2>
+                <div class="truth-items">
+                    <div class="truth-item reveal-up delay-1">
+                        <div class="truth-icon" aria-hidden="true">📋</div>
+                        <div class="truth-text">
+                            <strong>How they built the business case</strong> and proved ROI well enough to get executive sign-off.
+                        </div>
+                    </div>
+                    <div class="truth-item reveal-up delay-2">
+                        <div class="truth-icon" aria-hidden="true">📈</div>
+                        <div class="truth-text">
+                            <strong>How they went from one pilot</strong> to running across multiple sites — and what broke along the way.
+                        </div>
+                    </div>
+                    <div class="truth-item reveal-up delay-3">
+                        <div class="truth-icon" aria-hidden="true">🔑</div>
+                        <div class="truth-text">
+                            <strong>How they navigated procurement, BVLOS approval,</strong> and getting different hardware to actually work together.
+                        </div>
+                    </div>
+                    <div class="truth-item reveal-up delay-4">
+                        <div class="truth-icon" aria-hidden="true">🤖</div>
+                        <div class="truth-text">
+                            <strong>How they made the whole operation genuinely AI-native</strong> — not just automated.
+                        </div>
+                    </div>
+                </div>
+                <div class="truth-closer reveal-up delay-2">
+                    <div class="closer-line-1">That conversation normally stays locked inside the four walls of the company.</div>
+                    <div class="closer-line-2">NestGen is the one day a year it doesn't.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════
+             CHAPTER 4 · WHO'S COMING
+             "Not hypothetical. Confirmed."
+        ═══════════════════════════════════════ -->
+        <section class="chapter chapter-4" id="chapter-4" data-chapter-index="4" aria-label="Confirmed Speakers">
+            <div class="chapter-inner">
+                <div class="chapter-label reveal-up">04 / WHO'S ON STAGE</div>
+                <h2 class="chapter-headline speakers-headline reveal-up delay-1">NOT HYPOTHETICAL. CONFIRMED.</h2>
+                <p class="body-text speakers-body reveal-up delay-2">These organizations are showing up on September 29 to walk through how they actually built this — the parts that usually never leave the boardroom.</p>
+
+                <div class="speakers-grid">
+
+                    <div class="speaker-track reveal-up delay-1">
+                        <div class="track-header">
+                            <span aria-hidden="true">🚔</span> PUBLIC SAFETY
+                        </div>
+                        <ul class="speaker-list" role="list">
+                            <li class="speaker-row">
+                                <span class="speaker-org">UK Police (NPCC)</span>
+                                <span class="confirmed-badge" aria-label="Confirmed">CONFIRMED ✓</span>
+                            </li>
+                            <li class="speaker-row">
+                                <span class="speaker-org">Belgian Police · Westkust</span>
+                                <span class="confirmed-badge" aria-label="Confirmed">CONFIRMED ✓</span>
+                            </li>
+                            <li class="speaker-row">
+                                <span class="speaker-org">Uruguay Ministry of Interior</span>
+                                <span class="confirmed-badge" aria-label="Confirmed">CONFIRMED ✓</span>
+                            </li>
+                            <li class="speaker-row">
+                                <span class="speaker-org">LA Metro</span>
+                                <span class="confirmed-badge" aria-label="Confirmed">CONFIRMED ✓</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="speaker-track reveal-up delay-2">
+                        <div class="track-header">
+                            <span aria-hidden="true">🛡️</span> SECURITY
+                        </div>
+                        <ul class="speaker-list" role="list">
+                            <li class="speaker-row">
+                                <span class="speaker-org">Airbus</span>
+                                <span class="confirmed-badge" aria-label="Confirmed">CONFIRMED ✓</span>
+                            </li>
+                            <li class="speaker-row">
+                                <span class="speaker-org">Texas Instruments</span>
+                                <span class="confirmed-badge" aria-label="Confirmed">CONFIRMED ✓</span>
+                            </li>
+                            <li class="speaker-row">
+                                <span class="speaker-org">Antea Group</span>
+                                <span class="confirmed-badge" aria-label="Confirmed">CONFIRMED ✓</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="speaker-track reveal-up delay-3">
+                        <div class="track-header">
+                            <span aria-hidden="true">🚢</span> MARITIME
+                        </div>
+                        <ul class="speaker-list" role="list">
+                            <li class="speaker-row">
+                                <span class="speaker-org">MPA Singapore</span>
+                                <span class="confirmed-badge" aria-label="Confirmed">CONFIRMED ✓</span>
+                            </li>
+                            <li class="speaker-row">
+                                <span class="speaker-org">Port of Amsterdam</span>
+                                <span class="confirmed-badge" aria-label="Confirmed">CONFIRMED ✓</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="speaker-track reveal-up delay-1">
+                        <div class="track-header">
+                            <span aria-hidden="true">🚂</span> RAILWAYS &amp; TRANSPORT
+                        </div>
+                        <ul class="speaker-list" role="list">
+                            <li class="speaker-row">
+                                <span class="speaker-org">Italian Railways</span>
+                                <span class="confirmed-badge" aria-label="Confirmed">CONFIRMED ✓</span>
+                            </li>
+                            <li class="speaker-row">
+                                <span class="speaker-org">CSX Transportation</span>
+                                <span class="confirmed-badge" aria-label="Confirmed">CONFIRMED ✓</span>
+                            </li>
+                            <li class="speaker-row">
+                                <span class="speaker-org">LA Metro</span>
+                                <span class="confirmed-badge" aria-label="Confirmed">CONFIRMED ✓</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="speaker-track reveal-up delay-2">
+                        <div class="track-header">
+                            <span aria-hidden="true">🛢️</span> OIL &amp; GAS
+                        </div>
+                        <ul class="speaker-list" role="list">
+                            <li class="speaker-row">
+                                <span class="speaker-org">Shell Petroleum</span>
+                                <span class="confirmed-badge" aria-label="Confirmed">CONFIRMED ✓</span>
+                            </li>
+                            <li class="speaker-row">
+                                <span class="speaker-org">Marathon Petroleum</span>
+                                <span class="confirmed-badge" aria-label="Confirmed">CONFIRMED ✓</span>
+                            </li>
+                            <li class="speaker-row">
+                                <span class="speaker-org">YPF Argentina</span>
+                                <span class="confirmed-badge" aria-label="Confirmed">CONFIRMED ✓</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="speaker-track reveal-up delay-3">
+                        <div class="track-header">
+                            <span aria-hidden="true">⛰️</span> MINING
+                        </div>
+                        <ul class="speaker-list" role="list">
+                            <li class="speaker-row">
+                                <span class="speaker-org">First Quantum Minerals</span>
+                                <span class="confirmed-badge" aria-label="Confirmed">CONFIRMED ✓</span>
+                            </li>
+                            <li class="speaker-row">
+                                <span class="speaker-org">SQM · Chile</span>
+                                <span class="confirmed-badge" aria-label="Confirmed">CONFIRMED ✓</span>
+                            </li>
+                            <li class="speaker-row">
+                                <span class="speaker-org">Siyanda Bakgatla Platinum</span>
+                                <span class="confirmed-badge" aria-label="Confirmed">CONFIRMED ✓</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+
+                <div class="summit-summary reveal-up delay-2">
+                    <div class="summary-stat">
+                        <div class="summary-num">6</div>
+                        <div class="summary-label">INDUSTRY TRACKS</div>
+                    </div>
+                    <div class="summary-divider" aria-hidden="true"></div>
+                    <div class="summary-stat">
+                        <div class="summary-num">20+</div>
+                        <div class="summary-label">ORGANIZATIONS</div>
+                    </div>
+                    <div class="summary-divider" aria-hidden="true"></div>
+                    <div class="summary-stat">
+                        <div class="summary-num">1</div>
+                        <div class="summary-label">DAY · SEPTEMBER 29</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════
+             CHAPTER 5 · FLYTBASE
+             "The brain behind all of it."
+        ═══════════════════════════════════════ -->
+        <section class="chapter chapter-5 dot-bg" id="chapter-5" data-chapter-index="5" aria-label="About FlytBase">
+            <div class="chapter-inner">
+                <div class="chapter-label reveal-up">05 / THE OPERATING SYSTEM</div>
+
+                <div class="flytbase-layout">
+                    <div class="flytbase-text">
+                        <h2 class="chapter-headline reveal-up delay-1">THE BRAIN BEHIND ALL OF IT.</h2>
+                        <p class="body-text reveal-up delay-2">
+                            FlytBase isn't a drone company. It's the software that makes the drone, the dock, and everything they see work together — from a Chilean lithium mine to a North Sea oil platform to a Singapore container port.
+                        </p>
+                        <p class="body-text reveal-up delay-3">
+                            Think of it as the operating system for a small autonomous fleet. Wherever that fleet lives in the world.
+                        </p>
+                        <div class="hw-tags reveal-up delay-4">
+                            <span class="hw-tag">AUTONOMOUS DRONES</span>
+                            <span class="hw-tag">WEATHERPROOF DOCKS</span>
+                            <span class="hw-tag">AI ANALYTICS</span>
+                            <span class="hw-tag">FLEET MANAGEMENT</span>
+                            <span class="hw-tag">BVLOS OPERATIONS</span>
+                        </div>
+                    </div>
+                    <div class="flytbase-img-frame reveal-up delay-2">
+                        <div class="img-hard-frame">
+                            <img src="photos/05_supported_hardware.png"
+                                 alt="The complete FlytBase physical AI stack: autonomous drones, docking stations, humanoid robots, weather stations, and sensors"
+                                 loading="lazy">
+                            <div class="img-frame-caption">THE PHYSICAL AI STACK</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field-shots">
+                    <div class="field-shot reveal-up delay-1">
+                        <div class="img-hard-frame">
+                            <img src="photos/site_gallery_07.png"
+                                 alt="Drone launching autonomously from dock in alpine meadow — snow-capped peaks, no operator present"
+                                 loading="lazy">
+                            <div class="img-frame-caption">ALPINE · NO OPERATOR REQUIRED</div>
+                        </div>
+                    </div>
+                    <div class="field-shot reveal-up delay-2">
+                        <div class="img-hard-frame">
+                            <img src="photos/dock_mountain_terrain.png"
+                                 alt="Drone dock fully operational in extreme winter — ice-covered unit still functioning in mountain conditions"
+                                 loading="lazy">
+                            <div class="img-frame-caption">ARCTIC CONDITIONS · FULLY OPERATIONAL</div>
+                        </div>
+                    </div>
+                    <div class="field-shot reveal-up delay-3">
+                        <div class="img-hard-frame">
+                            <img src="photos/datacenters_dashboard.png"
+                                 alt="Thermal imaging of data center equipment showing heat signatures — Max 57.1°C detected before failure"
+                                 loading="lazy">
+                            <div class="img-frame-caption">THERMAL · MAX 57.1°C BEFORE FAILURE</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════
+             CHAPTER 6 · THE INVITATION
+             "September 29."
+        ═══════════════════════════════════════ -->
+        <section class="chapter chapter-6" id="chapter-6" data-chapter-index="6" aria-label="Register for NestGen 26">
+            <div class="chapter-inner cta-inner">
+                <div class="cta-event-pill reveal-up">A FLYTBASE EVENT</div>
+                <h2 class="cta-headline reveal-up delay-1">NESTGEN<br>'26</h2>
+                <div class="cta-meta reveal-up delay-2">
+                    <span class="cta-meta-item">ONLINE</span>
+                    <span class="cta-meta-sep" aria-hidden="true">·</span>
+                    <span class="cta-meta-item">SEPTEMBER 29, 2026</span>
+                    <span class="cta-meta-sep" aria-hidden="true">·</span>
+                    <span class="cta-meta-item">ONE DAY ONLY</span>
+                </div>
+                <p class="cta-pitch reveal-up delay-3">
+                    The once-a-year day the boardroom goes public. Real programs. Real failures. Real playbooks. From Airbus to Shell to the UK Police to SQM to First Quantum Minerals.
+                </p>
+                <a href="#" class="cta-btn reveal-up delay-4" id="ctaMainBtn" role="button">
+                    SECURE YOUR SEAT
+                    <span class="cta-btn-arrow" aria-hidden="true">→</span>
+                </a>
+                <p class="cta-sub reveal-up delay-4">Free to attend. Lifetime access to recordings.</p>
+
+                <div class="cta-footer reveal-up delay-4">
+                    <div class="footer-brand">
+                        <span class="footer-powered">Powered by</span>
+                        <strong class="footer-wordmark">flytbase</strong>
+                    </div>
+                    <nav class="footer-links" aria-label="Footer links">
+                        <a href="#">About NestGen</a>
+                        <a href="#">Past Events</a>
+                        <a href="#">FlytBase Platform</a>
+                    </nav>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
