@@ -7,6 +7,7 @@ import { useMissionStore } from '@/store/useMissionStore';
 export default function DrewFloatingOverlay() {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
+  const cloudRef = useRef<HTMLDivElement>(null);
 
   const { activeStatus } = useMissionStore();
 
@@ -74,7 +75,7 @@ export default function DrewFloatingOverlay() {
     const body = bodyRef.current;
     if (!wrapper || !body) return;
 
-    // 1. Initial Intro Swoop Sequence (Centered Screen)
+    // Initial Intro Swoop Sequence
     gsap.set(wrapper, {
       x: window.innerWidth * 0.35,
       y: window.innerHeight * 0.28,
@@ -82,7 +83,6 @@ export default function DrewFloatingOverlay() {
 
     const introTl = gsap.timeline({
       onComplete: () => {
-        // Enable mousemove quickTo trailing after intro
         setIsCursorEnabled(true);
       },
     });
@@ -93,12 +93,11 @@ export default function DrewFloatingOverlay() {
       { scale: 1, opacity: 1, y: window.innerHeight * 0.28, duration: 1.2, ease: 'back.out(1.4)' }
     );
 
-    // Intro step timers
     const t1 = setTimeout(() => setIntroStep(1), 1500);
     const t2 = setTimeout(() => setIntroStep(2), 3000);
     const t3 = setTimeout(() => setIsCursorEnabled(true), 4500);
 
-    // 2. Continuous Idle Bob & Rotation on #drew-body (Separated from quickTo wrapper)
+    // Continuous Idle Bobbing & Rotation
     const idleTween = gsap.to(body, {
       y: '+=6',
       rotation: 2,
@@ -117,30 +116,50 @@ export default function DrewFloatingOverlay() {
     };
   }, []);
 
-  // REAL-TIME CURSOR-FOLLOWING (`quickTo` with 0.45s power3 ease)
+  // REAL-TIME CURSOR-FOLLOWING & MAGNETIC SPEECH CLOUD EFFECT
   useEffect(() => {
     if (!isCursorEnabled || !wrapperRef.current) return;
 
     const wrapper = wrapperRef.current;
+    const cloud = cloudRef.current;
 
-    // GSAP quickTo setters for buttery, lagged-follow motion
     const xTo = gsap.quickTo(wrapper, 'x', { duration: 0.45, ease: 'power3' });
     const yTo = gsap.quickTo(wrapper, 'y', { duration: 0.45, ease: 'power3' });
 
+    let cloudXTo: any = null;
+    let cloudYTo: any = null;
+    if (cloud) {
+      cloudXTo = gsap.quickTo(cloud, 'x', { duration: 0.3, ease: 'power3' });
+      cloudYTo = gsap.quickTo(cloud, 'y', { duration: 0.3, ease: 'power3' });
+    }
+
     const handleMouseMove = (e: MouseEvent) => {
-      // Offset by +35px X & +25px Y so Drew never covers the cursor or blocks clicks
       xTo(e.clientX + 35);
       yTo(e.clientY + 25);
+
+      // MAGNETIC CLOUD PULL
+      if (cloud && cloudXTo && cloudYTo) {
+        const r = cloud.getBoundingClientRect();
+        const relX = e.clientX - (r.left + r.width / 2);
+        const relY = e.clientY - (r.top + r.height / 2);
+        const dist = Math.sqrt(relX * relX + relY * relY);
+
+        if (dist < 200) {
+          cloudXTo(relX * 0.25);
+          cloudYTo(relY * 0.25);
+        } else {
+          cloudXTo(0);
+          cloudYTo(0);
+        }
+      }
     };
 
     const mm = gsap.matchMedia();
 
-    // Desktop: Cursor Trail
     mm.add('(pointer: fine)', () => {
       window.addEventListener('mousemove', handleMouseMove);
     });
 
-    // Mobile / Touch: Autonomous Idle Orbit Drift Loop
     mm.add('(pointer: coarse), (max-width: 768px)', () => {
       gsap.to(wrapper, {
         x: '+=40',
@@ -173,15 +192,19 @@ export default function DrewFloatingOverlay() {
       }}
     >
       <div ref={bodyRef} className="drew-floating-body">
-        {/* SPEECH CLOUD BUBBLE */}
+        {/* SPEECH CLOUD BUBBLE WITH DREW SPECIAL ELITE FONT & MAGNETIC HOVER */}
         {speechData && (
-          <div className={`drew-speech-cloud ${speechData.isTurn ? 'cloud-turn' : ''}`}>
+          <div
+            ref={cloudRef}
+            className={`drew-speech-cloud ${speechData.isTurn ? 'cloud-turn' : ''}`}
+            style={{ pointerEvents: 'auto' }}
+          >
             <div className="cloud-header">
               <span>DREW // MISSION GUIDE</span>
               <span className="cloud-dot" />
             </div>
-            <p className="cloud-text">{speechData.quote}</p>
-            {speechData.sub && <p className="cloud-text-sub">{speechData.sub}</p>}
+            <p className="cloud-text drew-font-text">{speechData.quote}</p>
+            {speechData.sub && <p className="cloud-text-sub drew-font-text">{speechData.sub}</p>}
             <div className="cloud-tail" />
           </div>
         )}
@@ -195,30 +218,23 @@ export default function DrewFloatingOverlay() {
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
           >
-            {/* Top Left Propeller (Animated spinning blades) */}
             <g className="drew-propeller">
               <rect x="2" y="2" width="10" height="2" fill="#E4B12A" />
               <rect x="6" y="0" width="2" height="6" fill="#EDE8DA" />
             </g>
 
-            {/* Top Right Propeller */}
             <g className="drew-propeller">
               <rect x="24" y="2" width="10" height="2" fill="#E4B12A" />
               <rect x="28" y="0" width="2" height="6" fill="#EDE8DA" />
             </g>
 
-            {/* Quadcopter Arms */}
             <rect x="5" y="6" width="26" height="3" fill="#2A1F16" />
-
-            {/* Main Body Chassis */}
             <rect x="9" y="8" width="18" height="12" fill="#E4B12A" stroke="#2A1F16" strokeWidth="1.5" />
             <rect x="11" y="10" width="14" height="8" fill="#254A33" />
 
-            {/* Center Optical AI Lens Camera */}
             <rect x="15" y="12" width="6" height="5" fill="#11151C" stroke="#2A1F16" strokeWidth="1" />
             <circle cx="18" cy="14.5" r="1.5" fill="#00FF7F" className="drew-lens-pulse" />
 
-            {/* Landing Skids */}
             <rect x="10" y="20" width="2" height="5" fill="#2A1F16" />
             <rect x="24" y="20" width="2" height="5" fill="#2A1F16" />
             <rect x="8" y="24" width="20" height="2" fill="#C96A35" />

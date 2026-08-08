@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=JetBrains+Mono:wght@400;500;600&family=Special+Elite&display=swap');
 
 /* ── CLASSIFIED DOSSIER & DREW THE DRONE BRAND SYSTEM ───── */
 :root {
@@ -13,8 +13,10 @@
   --mission-green: #00FF7F;
   --alert-red: #FF3B30;
 
-  --font-pixel: 'Press Start 2P', monospace;
-  --font-mono:  'Roboto Mono', monospace;
+  /* Three Distinct Typography Roles */
+  --font-display: 'Chakra Petch', sans-serif;   /* Headlines, big HUD numbers, chapter titles */
+  --font-mono:    'JetBrains Mono', monospace;   /* Body copy, HUD readouts, timestamps, stats */
+  --font-drew:    'Special Elite', monospace;    /* Drew's speech-cloud dialogue ONLY */
 
   /* Easing Tokens */
   --ease-mechanical: cubic-bezier(0.19, 1, 0.22, 1);
@@ -54,17 +56,172 @@ img {
   max-width: 100%;
 }
 
-.pixel {
-  font-family: var(--font-pixel);
+.display-font {
+  font-family: var(--font-display);
   letter-spacing: 0.05em;
+}
+
+.mono-font {
+  font-family: var(--font-mono);
+}
+
+.drew-font-text {
+  font-family: var(--font-drew) !important;
+  letter-spacing: 0.02em;
 }
 
 .kinetic-headline {
   perspective: 1000px;
 }
 
-.c5-media-img, .horizontal-panel, .redaction-bar {
+.c5-media-img, .horizontal-panel, .redact-bar {
   will-change: transform;
+}
+
+/* ── FAST, SMOOTH CLICK-TO-DECLASSIFY TEXT ───────────── */
+.redact-wrap {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.redact-bar {
+  position: absolute;
+  inset: -2px -4px;
+  background: #14100c;
+  border-left: 3.5px solid var(--mustard);
+  z-index: 10;
+  transform-origin: right center;
+  pointer-events: auto;
+  box-shadow: 0 0 12px rgba(0,0,0,0.8);
+}
+
+.redact-wrap.declassified .redact-bar {
+  transform: scaleX(0);
+}
+
+.redact-text {
+  position: relative;
+  z-index: 1;
+}
+
+.declassify-label-hint {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--mustard);
+  opacity: 0.85;
+  letter-spacing: 0.15em;
+  margin-top: 0.5rem;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: color 0.2s, opacity 0.2s;
+}
+
+.declassify-label-hint:hover {
+  color: #FFF;
+  opacity: 1;
+}
+
+/* ── IMPROVEMENT 3: DRAG-TO-COMPARE SLIDER (CHAPTER 01) ─ */
+.compare-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 760px;
+  height: 380px;
+  border: 1.5px solid var(--dark-border);
+  background: var(--dark-panel);
+  overflow: hidden;
+  user-select: none;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.8);
+}
+
+.compare-base {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(1) contrast(1.05);
+}
+
+.compare-clip {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  width: 50%;
+  border-right: 2px solid var(--mustard);
+}
+
+.compare-top {
+  width: 760px;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(0.85) contrast(1.1) brightness(0.7);
+}
+
+.compare-handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 28px;
+  margin-left: -14px;
+  cursor: ew-resize;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.handle-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 3px;
+  margin-left: -1.5px;
+  background: var(--mustard);
+  box-shadow: 0 0 10px var(--mustard);
+}
+
+.handle-button {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--mustard);
+  border: 2px solid var(--ink);
+  color: var(--ink);
+  font-size: 0.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  box-shadow: 0 0 12px var(--mustard);
+  position: relative;
+  z-index: 2;
+}
+
+.compare-label {
+  position: absolute;
+  top: 1rem;
+  font-family: var(--font-display);
+  font-size: 0.5rem;
+  letter-spacing: 0.15em;
+  padding: 0.4rem 0.8rem;
+  z-index: 10;
+}
+
+.compare-label.left {
+  left: 1rem;
+  background: rgba(10, 13, 16, 0.85);
+  color: rgba(255,255,255,0.7);
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.compare-label.right {
+  right: 1rem;
+  background: rgba(228, 177, 42, 0.9);
+  color: var(--ink);
+  border: 1px solid var(--ink);
 }
 
 /* ── DREW THE DRONE GUIDE CHARACTER & SPEECH CLOUD ───── */
@@ -119,6 +276,7 @@ img {
   text-align: left;
   transform-origin: left center;
   animation: cloud-pop 0.4s var(--ease-pop);
+  font-family: var(--font-drew) !important;
 }
 
 @keyframes cloud-pop {
@@ -136,7 +294,7 @@ img {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-family: var(--font-pixel);
+  font-family: var(--font-display);
   font-size: 0.42rem;
   color: var(--mustard);
   letter-spacing: 0.15em;
@@ -152,6 +310,7 @@ img {
 }
 
 .cloud-text {
+  font-family: var(--font-drew) !important;
   font-size: 0.95rem;
   color: var(--cream);
   font-weight: 400;
@@ -159,6 +318,7 @@ img {
 }
 
 .cloud-text-sub {
+  font-family: var(--font-drew) !important;
   font-size: 0.85rem;
   color: rgba(237, 232, 218, 0.7);
   margin-top: 0.4rem;
@@ -186,7 +346,6 @@ img {
   background: #040608;
 }
 
-/* AMBIENT BACKGROUND DEPTH LAYER (BLUEPRINT GRID + RADAR SWEEP) */
 .chap-4-ambient-bg {
   position: absolute;
   inset: 0;
@@ -220,7 +379,6 @@ img {
   to { transform: rotate(360deg); }
 }
 
-/* PERSISTENT COMPANY PROGRESS MAP CHIP HEADER BAR */
 .chap-4-chip-header {
   position: absolute;
   top: 2rem;
@@ -237,7 +395,7 @@ img {
 }
 
 .chip-header-label {
-  font-family: var(--font-pixel);
+  font-family: var(--font-display);
   font-size: 0.45rem;
   color: var(--mustard);
   letter-spacing: 0.2em;
@@ -255,7 +413,7 @@ img {
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  font-family: var(--font-pixel);
+  font-family: var(--font-mono);
   font-size: 0.42rem;
   padding: 0.4rem 0.8rem;
   background: rgba(17, 21, 28, 0.85);
@@ -276,10 +434,9 @@ img {
   font-size: 0.5rem;
 }
 
-/* HORIZONTAL PANELS CONTAINER WITH PEEKING ADJACENT PANELS */
 .horizontal-panels-container {
   display: flex;
-  width: 600vw; /* 6 panels x 100vw */
+  width: 600vw;
   height: 100vh;
   will-change: transform;
   position: relative;
@@ -293,7 +450,7 @@ img {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 6rem 8vw 4rem; /* 8vw padding creates visible peeking edges on left/right! */
+  padding: 6rem 8vw 4rem;
   transition: filter 0.3s var(--ease-mechanical), opacity 0.3s var(--ease-mechanical);
 }
 
@@ -329,14 +486,13 @@ img {
 }
 
 .panel-metric {
-  font-family: var(--font-pixel);
+  font-family: var(--font-display);
   font-size: clamp(1.4rem, 3vw, 2.4rem);
   color: var(--mustard);
   margin: 1rem 0 1.5rem;
   line-height: 1.3;
 }
 
-/* SCROLL PROGRESS DOTS AT BOTTOM OF SECTION */
 .chap-4-progress-dots {
   position: absolute;
   bottom: 2rem;
@@ -366,7 +522,7 @@ img {
   inset: 0;
   pointer-events: none;
   z-index: 8000;
-  font-family: var(--font-pixel);
+  font-family: var(--font-display);
   font-size: 0.45rem;
   color: rgba(255, 255, 255, 0.45);
   padding: 1.2rem 1.8rem;
@@ -442,35 +598,6 @@ img {
   height: 100%;
   background: var(--mustard);
   transition: width 0.2s var(--ease-mechanical);
-}
-
-/* ── REDACTION BAR DECLASSIFICATION ──────────────────── */
-.redaction-wrapper {
-  position: relative;
-  display: inline-block;
-}
-
-.redaction-wrapper.inline {
-  display: inline;
-}
-
-.redaction-bar {
-  position: absolute;
-  inset: 0;
-  background: #000;
-  border-left: 3px solid var(--mustard);
-  z-index: 5;
-  transform-origin: left center;
-  transition: transform 0.8s var(--ease-mechanical);
-}
-
-.redaction-wrapper.declassified .redaction-bar {
-  transform: scaleX(0);
-}
-
-.redaction-text {
-  position: relative;
-  z-index: 1;
 }
 
 /* ── SURVEILLANCE TARGET CROSSHAIR CURSOR ────────────── */
@@ -560,16 +687,16 @@ img {
 
 /* ── TYPOGRAPHY & MECHANICAL COUNTERS ────────────────── */
 .c5-tag {
-  font-family: var(--font-pixel);
-  font-size: 0.55rem;
+  font-family: var(--font-display);
+  font-size: 0.65rem;
   color: var(--mustard);
   letter-spacing: 0.25em;
   margin-bottom: 1.8rem;
 }
 
 .c5-location-tag {
-  font-family: var(--font-pixel);
-  font-size: 0.5rem;
+  font-family: var(--font-display);
+  font-size: 0.55rem;
   color: var(--terracotta);
   background: rgba(201, 106, 53, 0.12);
   border: 1px solid var(--terracotta);
@@ -579,7 +706,7 @@ img {
 }
 
 .c5-heading-large {
-  font-family: var(--font-pixel);
+  font-family: var(--font-display);
   font-size: clamp(1.6rem, 3.5vw, 3rem);
   color: var(--cream);
   line-height: 1.4;
@@ -587,7 +714,7 @@ img {
 }
 
 .c5-heading-medium {
-  font-family: var(--font-pixel);
+  font-family: var(--font-display);
   font-size: clamp(1.2rem, 2.5vw, 2rem);
   color: var(--cream);
   margin-bottom: 1.5rem;
@@ -610,18 +737,13 @@ img {
   padding-left: 1.2rem;
 }
 
-.mechanical-font {
-  font-family: var(--font-mono);
-  transition: all 0.1s var(--ease-mechanical);
-}
-
 .c5-scroll-prompt {
   margin-top: 3rem;
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  font-family: var(--font-pixel);
-  font-size: 0.5rem;
+  font-family: var(--font-display);
+  font-size: 0.55rem;
   color: var(--mustard);
   letter-spacing: 0.2em;
 }
@@ -656,8 +778,8 @@ img {
   padding: 1rem 1.5rem;
   background: var(--dark-panel);
   border-top: 1px solid var(--dark-border);
-  font-family: var(--font-pixel);
-  font-size: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
   color: rgba(255,255,255,0.6);
   letter-spacing: 0.15em;
 }
@@ -696,8 +818,8 @@ img {
 }
 
 .c5-sidebar-title {
-  font-family: var(--font-pixel);
-  font-size: 0.75rem;
+  font-family: var(--font-display);
+  font-size: 0.85rem;
   color: var(--cream);
 }
 
@@ -708,7 +830,7 @@ img {
 }
 
 .c5-confidence-label {
-  font-size: 0.6rem;
+  font-size: 0.65rem;
   color: rgba(255,255,255,0.4);
 }
 
@@ -717,6 +839,7 @@ img {
   font-weight: 700;
   color: var(--mustard);
   line-height: 1;
+  font-family: var(--font-display);
 }
 
 .c5-confidence-bar {
@@ -736,8 +859,8 @@ img {
 }
 
 .c5-scan-stage-badge {
-  font-family: var(--font-pixel);
-  font-size: 0.48rem;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
   color: var(--mustard);
   background: rgba(228,177,42,0.1);
   padding: 0.6rem 0.8rem;
@@ -745,7 +868,7 @@ img {
 }
 
 .c5-proof-loc {
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   color: var(--mustard);
   margin-bottom: 0.5rem;
 }
@@ -758,21 +881,21 @@ img {
 }
 
 .c5-proof-detail {
-  font-size: 0.9rem;
-  color: rgba(255,255,255,0.6);
+  font-size: 0.95rem;
+  color: rgba(255,255,255,0.65);
   line-height: 1.7;
 }
 
 .c5-silence-quote {
   font-size: clamp(1.2rem, 2.5vw, 2.2rem);
-  font-weight: 300;
+  font-weight: 500;
   line-height: 1.8;
   color: var(--cream);
 }
 
 /* ── CHAPTER 5: REVEAL & INTERACTIVE TARGET LOCK SELECTOR ──── */
 .c5-reveal-title {
-  font-family: var(--font-pixel);
+  font-family: var(--font-display);
   font-size: clamp(2.8rem, 7vw, 6rem);
   color: var(--ink);
   margin-bottom: 1.5rem;
@@ -780,8 +903,8 @@ img {
 }
 
 .c5-track-selector-title {
-  font-family: var(--font-pixel);
-  font-size: 0.5rem;
+  font-family: var(--font-display);
+  font-size: 0.55rem;
   color: var(--ink);
   opacity: 0.85;
   letter-spacing: 0.1em;
@@ -797,8 +920,8 @@ img {
 }
 
 .c5-track-btn {
-  font-family: var(--font-pixel);
-  font-size: 0.48rem;
+  font-family: var(--font-display);
+  font-size: 0.55rem;
   padding: 0.6rem 1.2rem;
   background: var(--ink);
   color: var(--mustard);
@@ -844,8 +967,8 @@ img {
 }
 
 .c5-track-label {
-  font-family: var(--font-pixel);
-  font-size: 0.45rem;
+  font-family: var(--font-display);
+  font-size: 0.5rem;
   color: var(--ink);
   display: block;
   margin-bottom: 0.75rem;
@@ -859,8 +982,8 @@ img {
 }
 
 .c5-speaker-badge {
-  font-family: var(--font-pixel);
-  font-size: 0.48rem;
+  font-family: var(--font-display);
+  font-size: 0.52rem;
   background: var(--ink);
   color: var(--mustard);
   padding: 0.5rem 0.9rem;
@@ -874,25 +997,14 @@ img {
   line-height: 1.6;
 }
 
-.c5-loop-quote {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--ink);
-  max-width: 700px;
-  margin: 0 auto 2rem;
-  line-height: 1.6;
-  border-top: 1.5px solid rgba(42,31,22,0.3);
-  padding-top: 1.5rem;
-}
-
 .c5-cta-btn {
   display: inline-flex;
   align-items: center;
   gap: 1rem;
   background: var(--ink);
   color: var(--mustard);
-  font-family: var(--font-pixel);
-  font-size: clamp(0.6rem, 1.5vw, 0.85rem);
+  font-family: var(--font-display);
+  font-size: clamp(0.7rem, 1.5vw, 0.95rem);
   padding: 1.2rem 2.8rem;
   border: 3px solid var(--ink);
   text-decoration: none;
@@ -909,7 +1021,7 @@ img {
 
 .c5-cta-footnote {
   margin-top: 1.2rem;
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   color: rgba(42, 31, 22, 0.65);
   letter-spacing: 0.1em;
 }
@@ -922,8 +1034,8 @@ img {
   background: rgba(17, 21, 28, 0.85);
   border: 1px solid rgba(255,255,255,0.15);
   color: var(--mustard);
-  font-family: var(--font-pixel);
-  font-size: 0.45rem;
+  font-family: var(--font-display);
+  font-size: 0.5rem;
   padding: 0.6rem 0.9rem;
   cursor: pointer;
   backdrop-filter: blur(8px);
@@ -974,7 +1086,7 @@ img {
   .noise-canvas-overlay {
     display: none !important;
   }
-  .redaction-bar {
+  .redact-bar {
     display: none !important;
   }
   .sun-glow-background {

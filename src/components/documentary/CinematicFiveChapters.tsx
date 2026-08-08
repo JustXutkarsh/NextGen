@@ -8,17 +8,23 @@ import { useMissionStore } from '@/store/useMissionStore';
 import { sound } from '@/lib/sound';
 import DrewFloatingOverlay from '@/components/ui/DrewFloatingOverlay';
 import SunGlowOverlay from '@/components/ui/SunGlowOverlay';
+import DragToCompare from '@/components/ui/DragToCompare';
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function CinematicFiveChapters() {
   const containerRef = useRef<HTMLDivElement>(null);
   const scanCanvasRef = useRef<HTMLCanvasElement>(null);
+  const ctaBtnRef = useRef<HTMLAnchorElement>(null);
 
   const { progress, setProgress, setStatus } = useMissionStore();
 
   // Chapter 04 Active Panel State (0 to 5)
   const [activePanelIdx, setActivePanelIdx] = useState(0);
+
+  // Redaction Declassifying Click States
+  const [isDeclassifiedCh1, setIsDeclassifiedCh1] = useState(false);
+  const [isDeclassifiedTurn, setIsDeclassifiedTurn] = useState(false);
 
   // AI Scanner & UI States
   const [aiConfidence, setAiConfidence] = useState(12.0);
@@ -27,10 +33,6 @@ export default function CinematicFiveChapters() {
   const [selectedTrack, setSelectedTrack] = useState<string>('Oil & Gas');
   const [isLockingTrack, setIsLockingTrack] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
-
-  // Redaction Declassifying States
-  const [declassified1, setDeclassified1] = useState(false);
-  const [declassified35, setDeclassified35] = useState(false);
 
   // Company Chips Data for Chapter 04
   const companyChips = [
@@ -87,6 +89,67 @@ export default function CinematicFiveChapters() {
     }, 280);
   };
 
+  // FAST, SMOOTH CLICK-TO-DECLASSIFY HANDLERS
+  const triggerDeclassifyCh1 = () => {
+    if (isDeclassifiedCh1) return;
+    setIsDeclassifiedCh1(true);
+    sound.playDeclassifySFX();
+
+    const bar = document.querySelector('#redact-bar-ch1');
+    if (bar) {
+      gsap.to(bar, {
+        scaleX: 0,
+        duration: 0.4,
+        ease: 'power3.inOut',
+      });
+    }
+  };
+
+  const triggerDeclassifyTurn = () => {
+    if (isDeclassifiedTurn) return;
+    setIsDeclassifiedTurn(true);
+    sound.playDeclassifySFX();
+
+    const bar = document.querySelector('#redact-bar-turn');
+    if (bar) {
+      gsap.to(bar, {
+        scaleX: 0,
+        duration: 0.4,
+        ease: 'power3.inOut',
+      });
+    }
+  };
+
+  // MAGNETIC REGISTER CTA BUTTON SETUP
+  useEffect(() => {
+    const btn = ctaBtnRef.current;
+    if (!btn) return;
+
+    const xTo = gsap.quickTo(btn, 'x', { duration: 0.3, ease: 'power3' });
+    const yTo = gsap.quickTo(btn, 'y', { duration: 0.3, ease: 'power3' });
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const r = btn.getBoundingClientRect();
+      const relX = e.clientX - (r.left + r.width / 2);
+      const relY = e.clientY - (r.top + r.height / 2);
+      xTo(relX * 0.3);
+      yTo(relY * 0.3);
+    };
+
+    const handleMouseLeave = () => {
+      xTo(0);
+      yTo(0);
+    };
+
+    btn.addEventListener('mousemove', handleMouseMove);
+    btn.addEventListener('mouseleave', handleMouseLeave);
+
+    return () => {
+      btn.removeEventListener('mousemove', handleMouseMove);
+      btn.removeEventListener('mouseleave', handleMouseLeave);
+    };
+  }, []);
+
   // MASTER SCROLLTRIGGER CHOREOGRAPHY
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -122,11 +185,6 @@ export default function CinematicFiveChapters() {
           const p = self.progress;
           setProgress(p * 0.2);
           setStatus('CH 01 // THE ESSENCE');
-
-          if (p > 0.6 && !declassified1) {
-            setDeclassified1(true);
-            sound.playDeclassifySFX();
-          }
         },
       });
 
@@ -192,16 +250,11 @@ export default function CinematicFiveChapters() {
               const p = self.progress;
               setProgress(0.7 + p * 0.15);
 
-              // Compute active panel index (0 to 5)
               const idx = Math.min(5, Math.floor(p * 5.99));
               setActivePanelIdx(idx);
 
               if (idx === 5) {
                 setStatus('CH 03.5 // UNFILTERED STORY');
-                if (!declassified35) {
-                  setDeclassified35(true);
-                  sound.playDeclassifySFX();
-                }
               } else {
                 setStatus(`CH 04 // ${companyChips[idx].label}`);
               }
@@ -227,7 +280,7 @@ export default function CinematicFiveChapters() {
     }, containerRef);
 
     return () => ctx.revert();
-  }, [declassified1, declassified35, setProgress, setStatus]);
+  }, [setProgress, setStatus]);
 
   // Canvas Laser Scanner Render
   useEffect(() => {
@@ -263,7 +316,7 @@ export default function CinematicFiveChapters() {
         ctx.strokeRect(canvas.width * 0.25, canvas.height * 0.28, 220, 160);
 
         ctx.fillStyle = '#E4B12A';
-        ctx.font = '10px "Press Start 2P", monospace';
+        ctx.font = '10px "Chakra Petch", monospace';
         ctx.fillText(`ANOMALY #01 [${aiConfidence}%]`, canvas.width * 0.25, canvas.height * 0.28 - 10);
       }
 
@@ -287,25 +340,42 @@ export default function CinematicFiveChapters() {
         {isMuted ? 'SOUND: OFF' : '🔊 SOUND: ON'}
       </button>
 
-      {/* ── CHAPTER 1: THE ESSENCE ────────────────────────────── */}
+      {/* ── CHAPTER 1: THE ESSENCE (WITH DRAG-TO-COMPARE & CLICK-TO-DECLASSIFY) ── */}
       <div className="c5-pin-wrapper chap-1-pin">
         <section className="c5-stage">
           <div className="c5-content-narrow">
-            <div className="c5-tag">CHAPTER 01 // THE ESSENCE</div>
+            <div className="c5-tag display-font">CHAPTER 01 // THE ESSENCE</div>
 
-            <h1 className="c5-heading-large kinetic-headline">
+            <h1 className="c5-heading-large kinetic-headline display-font">
               Industrial inspection still depends on{' '}
-              <span className={`redaction-wrapper ${declassified1 ? 'declassified' : ''}`}>
-                <span className="redaction-bar" />
-                <span className="redaction-text">humans walking dangerous facilities.</span>
+              <span
+                className={`redact-wrap ${isDeclassifiedCh1 ? 'declassified' : ''}`}
+                onClick={triggerDeclassifyCh1}
+                title="Click to declassify"
+              >
+                <span className="redact-text">humans walking dangerous facilities.</span>
+                <span id="redact-bar-ch1" className="redact-bar" />
               </span>
             </h1>
 
-            <p className="c5-text-body highlight" style={{ marginTop: '1.5rem' }}>
+            <button
+              onClick={triggerDeclassifyCh1}
+              className="declassify-label-hint"
+              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+            >
+              {isDeclassifiedCh1 ? '✔ DECLASSIFIED FILE' : '[ CLICK TO DECLASSIFY CLASSIFIED TEXT ]'}
+            </button>
+
+            {/* INTERACTIVE DRAG-TO-COMPARE SLIDER */}
+            <div style={{ margin: '2rem 0' }}>
+              <DragToCompare />
+            </div>
+
+            <p className="c5-text-body highlight mono-font">
               Physical AI changes the equation—from reactive repairs after failure to continuous autonomous vigilance.
             </p>
 
-            <div className="c5-scroll-prompt">
+            <div className="c5-scroll-prompt display-font">
               <span>SCROLL TO ENTER ATACAMA FACILITY</span>
               <span className="c5-prompt-arrow">↓</span>
             </div>
@@ -317,8 +387,8 @@ export default function CinematicFiveChapters() {
       <div className="c5-pin-wrapper chap-2-pin">
         <section className="c5-stage">
           <div className="c5-content-wide">
-            <div className="c5-tag">CHAPTER 02 // REAL INCIDENT DEPLOYMENT</div>
-            <h2 className="c5-heading-medium kinetic-headline">
+            <div className="c5-tag display-font">CHAPTER 02 // REAL INCIDENT DEPLOYMENT</div>
+            <h2 className="c5-heading-medium kinetic-headline display-font">
               SQM Lithium Facility · Atacama Desert, Chile
             </h2>
 
@@ -329,7 +399,7 @@ export default function CinematicFiveChapters() {
                 className="c5-media-img c2-layer-bg"
               />
 
-              <div className="c2-layer-fg c5-media-caption">
+              <div className="c2-layer-fg c5-media-caption mono-font">
                 <span>LAT: -23.8647° | ELEVATION: 2,400M | SQM LITHIUM FACILITY</span>
               </div>
             </div>
@@ -356,19 +426,19 @@ export default function CinematicFiveChapters() {
             </div>
 
             <div className="c5-inspection-sidebar">
-              <div className="c5-location-tag">📍 NORTH SEA OFFSHORE PLATFORM // SHELL PETROLEUM</div>
-              <div className="c5-tag">CHAPTER 03 // LIVE AI EDGE SCANNER</div>
-              <h3 className="c5-sidebar-title kinetic-headline">Scanning Storage Tank 4A</h3>
+              <div className="c5-location-tag display-font">📍 NORTH SEA OFFSHORE PLATFORM // SHELL PETROLEUM</div>
+              <div className="c5-tag display-font">CHAPTER 03 // LIVE AI EDGE SCANNER</div>
+              <h3 className="c5-sidebar-title kinetic-headline display-font">Scanning Storage Tank 4A</h3>
 
               <div className="c5-confidence-box">
-                <span className="c5-confidence-label">CONFIDENCE RATING (SCRUB-LINKED TICKER)</span>
-                <span className="c5-confidence-val mechanical-font">{aiConfidence}%</span>
+                <span className="c5-confidence-label mono-font">CONFIDENCE RATING (SCRUB-LINKED TICKER)</span>
+                <span className="c5-confidence-val display-font">{aiConfidence}%</span>
                 <div className="c5-confidence-bar">
                   <div className="c5-confidence-fill" style={{ width: `${aiConfidence}%` }} />
                 </div>
               </div>
 
-              <div className="c5-scan-stage-badge">
+              <div className="c5-scan-stage-badge mono-font">
                 STATUS: {scanStage}
               </div>
             </div>
@@ -378,15 +448,13 @@ export default function CinematicFiveChapters() {
 
       {/* ── CHAPTER 04: PINNED HORIZONTAL BREAKOUT WITH PEEKING PANELS ── */}
       <div className="chap-4-horizontal-wrapper">
-        {/* AMBIENT BACKGROUND DEPTH LAYER: BLUEPRINT GRID + RADAR SWEEP */}
         <div className="chap-4-ambient-bg">
           <div className="chap-4-grid-lines" />
           <div className="chap-4-radar-sweep" />
         </div>
 
-        {/* PERSISTENT COMPANY PROGRESS MAP CHIPS (HEADER BAR) */}
         <div className="chap-4-chip-header">
-          <div className="chip-header-label">CLASSIFIED ENTERPRISE DOSSIERS // PROOF AT SCALE</div>
+          <div className="chip-header-label display-font">CLASSIFIED ENTERPRISE DOSSIERS // PROOF AT SCALE</div>
           <div className="chip-header-row">
             {companyChips.map((chip) => (
               <div
@@ -394,13 +462,12 @@ export default function CinematicFiveChapters() {
                 className={`company-chip ${activePanelIdx === chip.id ? 'active' : ''}`}
               >
                 <span className="chip-indicator">{activePanelIdx === chip.id ? '●' : '○'}</span>
-                <span className="chip-title">{chip.label}</span>
+                <span className="chip-title mono-font">{chip.label}</span>
               </div>
             ))}
           </div>
         </div>
 
-        {/* HORIZONTAL PANELS CONTAINER (PEEKING PANELS BLEEDING IN) */}
         <div className="horizontal-panels-container">
           {/* PANEL 1: SHELL PETROLEUM */}
           <div className={`horizontal-panel panel-1 ${activePanelIdx === 0 ? 'panel-active' : 'panel-peeking'}`}>
@@ -408,11 +475,11 @@ export default function CinematicFiveChapters() {
               className="panel-inner panel-card-bg"
               style={{ backgroundImage: 'linear-gradient(to top, rgba(10,14,20,0.96) 20%, rgba(10,14,20,0.65) 100%), url(/photos/oilgas_dashboard.png)' }}
             >
-              <div className="c5-tag">CHAPTER 04 // ENTERPRISE PROOF</div>
-              <div className="c5-proof-loc">📍 North Sea Offshore Oil Platform</div>
-              <h2 className="c5-proof-stat mechanical-font">SHELL PETROLEUM</h2>
-              <div className="panel-metric">100X FLIGHT FREQUENCY</div>
-              <p className="c5-proof-detail">
+              <div className="c5-tag display-font">CHAPTER 04 // ENTERPRISE PROOF</div>
+              <div className="c5-proof-loc mono-font">📍 North Sea Offshore Oil Platform</div>
+              <h2 className="c5-proof-stat display-font">SHELL PETROLEUM</h2>
+              <div className="panel-metric display-font">100X FLIGHT FREQUENCY</div>
+              <p className="c5-proof-detail mono-font">
                 Shell operates fully autonomous dock flights on floating offshore oil platforms in heavy North Sea maritime weather without human pilots onboard.
               </p>
             </div>
@@ -424,11 +491,11 @@ export default function CinematicFiveChapters() {
               className="panel-inner panel-card-bg"
               style={{ backgroundImage: 'linear-gradient(to top, rgba(10,14,20,0.96) 20%, rgba(10,14,20,0.65) 100%), url(/photos/dock_mountain_terrain.png)' }}
             >
-              <div className="c5-tag">CHAPTER 04 // ENTERPRISE PROOF</div>
-              <div className="c5-proof-loc">📍 Atacama Desert, Chile</div>
-              <h2 className="c5-proof-stat mechanical-font">SQM LITHIUM</h2>
-              <div className="panel-metric">90 MIN LEAK DETECTION</div>
-              <p className="c5-proof-detail">
+              <div className="c5-tag display-font">CHAPTER 04 // ENTERPRISE PROOF</div>
+              <div className="c5-proof-loc mono-font">📍 Atacama Desert, Chile</div>
+              <h2 className="c5-proof-stat display-font">SQM LITHIUM</h2>
+              <div className="panel-metric display-font">90 MIN LEAK DETECTION</div>
+              <p className="c5-proof-detail mono-font">
                 SQM Chile cut chemical leak detection time from 3 days down to under 90 minutes across vast lithium evaporation ponds.
               </p>
             </div>
@@ -440,11 +507,11 @@ export default function CinematicFiveChapters() {
               className="panel-inner panel-card-bg"
               style={{ backgroundImage: 'linear-gradient(to top, rgba(10,14,20,0.96) 20%, rgba(10,14,20,0.65) 100%), url(/photos/verkos_security_dashboard.png)' }}
             >
-              <div className="c5-tag">CHAPTER 04 // ENTERPRISE PROOF</div>
-              <div className="c5-proof-loc">📍 United States Rail Mesh</div>
-              <h2 className="c5-proof-stat mechanical-font">CSX TRANSPORTATION</h2>
-              <div className="panel-metric">CREDIT-CARD RAIL DEFECTS</div>
-              <p className="c5-proof-detail">
+              <div className="c5-tag display-font">CHAPTER 04 // ENTERPRISE PROOF</div>
+              <div className="c5-proof-loc mono-font">📍 United States Rail Mesh</div>
+              <h2 className="c5-proof-stat display-font">CSX TRANSPORTATION</h2>
+              <div className="panel-metric display-font">CREDIT-CARD RAIL DEFECTS</div>
+              <p className="c5-proof-detail mono-font">
                 CSX identifies credit-card sized structural rail anomalies at 100ft altitude without shutting down live passenger or freight tracks.
               </p>
             </div>
@@ -456,11 +523,11 @@ export default function CinematicFiveChapters() {
               className="panel-inner panel-card-bg"
               style={{ backgroundImage: 'linear-gradient(to top, rgba(10,14,20,0.96) 20%, rgba(10,14,20,0.65) 100%), url(/photos/site_gallery_05.png)' }}
             >
-              <div className="c5-tag">CHAPTER 04 // ENTERPRISE PROOF</div>
-              <div className="c5-proof-loc">📍 Germany & European Solar Grids</div>
-              <h2 className="c5-proof-stat mechanical-font">ENBW SOLAR & AIRBUS</h2>
-              <div className="panel-metric">60% COST REDUCTION</div>
-              <p className="c5-proof-detail">
+              <div className="c5-tag display-font">CHAPTER 04 // ENTERPRISE PROOF</div>
+              <div className="c5-proof-loc mono-font">📍 Germany & European Solar Grids</div>
+              <h2 className="c5-proof-stat display-font">ENBW SOLAR & AIRBUS</h2>
+              <div className="panel-metric display-font">60% COST REDUCTION</div>
+              <p className="c5-proof-detail mono-font">
                 EnBW & Airbus deploy autonomous dock fleets for solar panel thermography and perimeter security, slashing security response times by 50%.
               </p>
             </div>
@@ -472,34 +539,45 @@ export default function CinematicFiveChapters() {
               className="panel-inner panel-card-bg"
               style={{ backgroundImage: 'linear-gradient(to top, rgba(10,14,20,0.96) 20%, rgba(10,14,20,0.65) 100%), url(/photos/02_drone_software_console.png)' }}
             >
-              <div className="c5-tag">CHAPTER 04 // ENTERPRISE PROOF</div>
-              <div className="c5-proof-loc">📍 Port of Singapore & UK NPCC</div>
-              <h2 className="c5-proof-stat mechanical-font">MPA SINGAPORE & UK POLICE</h2>
-              <div className="panel-metric">&lt; 90 SEC INCIDENT DISPATCH</div>
-              <p className="c5-proof-detail">
+              <div className="c5-tag display-font">CHAPTER 04 // ENTERPRISE PROOF</div>
+              <div className="c5-proof-loc mono-font">📍 Port of Singapore & UK NPCC</div>
+              <h2 className="c5-proof-stat display-font">MPA SINGAPORE & UK POLICE</h2>
+              <div className="panel-metric display-font">&lt; 90 SEC INCIDENT DISPATCH</div>
+              <p className="c5-proof-detail mono-font">
                 Expanded commercial port surveillance from 400m to 5km, dispatching autonomous first-responder aerial support in under 90 seconds.
               </p>
             </div>
           </div>
 
-          {/* PANEL 6: THE UNFILTERED TURN (THE QUIET STRIPPED-BACK MOMENT) */}
+          {/* PANEL 6: THE UNFILTERED TURN */}
           <div className={`horizontal-panel panel-6 ${activePanelIdx === 5 ? 'panel-active' : 'panel-peeking'}`}>
             <div className="panel-inner text-center" style={{ background: '#000', border: '1px solid var(--mustard)' }}>
-              <div className="c5-tag" style={{ color: 'var(--mustard)' }}>
+              <div className="c5-tag display-font" style={{ color: 'var(--mustard)' }}>
                 THE TURN // WHAT THE CASE STUDY DOESN'T SHOW
               </div>
 
-              <blockquote className="c5-silence-quote" style={{ marginTop: '1.5rem' }}>
-                <span className={`redaction-wrapper inline ${declassified35 ? 'declassified' : ''}`}>
-                  <span className="redaction-bar" />
-                  <strong className="redaction-text">That part doesn't usually make it into the case study. At NestGen, it does.</strong>
+              <blockquote className="c5-silence-quote display-font" style={{ marginTop: '1.5rem' }}>
+                <span
+                  className={`redact-wrap ${isDeclassifiedTurn ? 'declassified' : ''}`}
+                  onClick={triggerDeclassifyTurn}
+                  title="Click to declassify"
+                >
+                  <span className="redact-text">That part doesn't usually make it into the case study. At NestGen, it does.</span>
+                  <span id="redact-bar-turn" className="redact-bar" />
                 </span>
               </blockquote>
+
+              <button
+                onClick={triggerDeclassifyTurn}
+                className="declassify-label-hint"
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginTop: '0.8rem' }}
+              >
+                {isDeclassifiedTurn ? '✔ DECLASSIFIED FILE' : '[ CLICK TO DECLASSIFY CLASSIFIED TEXT ]'}
+              </button>
             </div>
           </div>
         </div>
 
-        {/* SCROLL PROGRESS DOTS AT BOTTOM OF SECTION */}
         <div className="chap-4-progress-dots">
           {companyChips.map((chip) => (
             <span
@@ -510,15 +588,14 @@ export default function CinematicFiveChapters() {
         </div>
       </div>
 
-      {/* ── CHAPTER 5: NESTGEN REVEAL & CTA ────────────────────── */}
+      {/* ── CHAPTER 5: NESTGEN REVEAL & CTA (WITH MAGNETIC BUTTON) ── */}
       <div className="c5-pin-wrapper chap-5-pin">
         <section className="c5-stage c5-stage-reveal">
           <div className="c5-content-wide" style={{ textAlign: 'center' }}>
-            <div className="c5-tag" style={{ color: 'var(--ink)' }}>SEPTEMBER 29, 2026 · ONLINE GLOBAL SUMMIT</div>
-            <h1 className="c5-reveal-title kinetic-headline">NESTGEN '26</h1>
+            <div className="c5-tag display-font" style={{ color: 'var(--ink)' }}>SEPTEMBER 29, 2026 · ONLINE GLOBAL SUMMIT</div>
+            <h1 className="c5-reveal-title kinetic-headline display-font">NESTGEN '26</h1>
 
-            {/* REAL INTERACTIVE INDUSTRY TARGET LOCK SELECTOR */}
-            <div className="c5-track-selector-title" style={{ marginTop: '1.5rem' }}>
+            <div className="c5-track-selector-title display-font" style={{ marginTop: '1.5rem' }}>
               TARGET LOCK // SELECT AN INDUSTRY TRACK TO REVEAL CONFIRMED SPEAKERS & PLAYBOOKS:
             </div>
 
@@ -527,42 +604,42 @@ export default function CinematicFiveChapters() {
                 <button
                   key={track}
                   onClick={() => handleTrackSelect(track)}
-                  className={`c5-track-btn ${selectedTrack === track ? 'active' : ''} ${isLockingTrack ? 'locking' : ''}`}
+                  className={`c5-track-btn display-font ${selectedTrack === track ? 'active' : ''} ${isLockingTrack ? 'locking' : ''}`}
                 >
                   <span className="track-icon">🎯</span> {track}
                 </button>
               ))}
             </div>
 
-            {/* TARGET LOCK DISPLAY PANEL */}
             <div className={`c5-track-display ${isLockingTrack ? 'target-locking' : ''}`}>
               <div className="c5-track-speakers">
-                <span className="c5-track-label">CONFIRMED SPEAKERS FOR {selectedTrack.toUpperCase()}:</span>
+                <span className="c5-track-label display-font">CONFIRMED SPEAKERS FOR {selectedTrack.toUpperCase()}:</span>
                 <div className="c5-speaker-roster">
                   {trackData[selectedTrack].speakers.map((spk, idx) => (
-                    <span key={idx} className="c5-speaker-badge">
+                    <span key={idx} className="c5-speaker-badge display-font">
                       ✔ {spk}
                     </span>
                   ))}
                 </div>
               </div>
 
-              <div className="c5-track-quote">
+              <div className="c5-track-quote mono-font">
                 “{trackData[selectedTrack].quote}”
               </div>
             </div>
 
             <div style={{ marginTop: '2.5rem' }}>
               <a
+                ref={ctaBtnRef}
                 href="https://nestgen.org"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="c5-cta-btn"
+                className="c5-cta-btn register-btn display-font"
               >
                 <span>ACCEPT MISSION BRIEFING & REGISTER</span>
                 <span>→</span>
               </a>
-              <div className="c5-cta-footnote">
+              <div className="c5-cta-footnote mono-font">
                 FREE TO ATTEND · LIFETIME ACCESS TO ALL SESSION RECORDINGS
               </div>
             </div>
