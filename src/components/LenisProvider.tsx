@@ -1,48 +1,36 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import Lenis from 'lenis';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { useMissionStore } from '@/store/useMissionStore';
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function LenisProvider({ children }: { children: React.ReactNode }) {
-  const lenisRef = useRef<Lenis | null>(null);
-  const setScrollVelocity = useMissionStore((s) => s.setScrollVelocity);
-  const tickTimer = useMissionStore((s) => s.tickTimer);
-
   useEffect(() => {
+    // 1. Set up Lenis physics-based smooth scroll
     const lenis = new Lenis({
-      duration: 1.2,
+      duration: 1.1,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      smoothWheel: true,
     });
 
-    lenisRef.current = lenis;
+    // 2. Sync Lenis scroll with GSAP ScrollTrigger's update loop
+    lenis.on('scroll', ScrollTrigger.update);
 
-    lenis.on('scroll', (e: any) => {
-      ScrollTrigger.update();
-      setScrollVelocity(Math.abs(e.velocity || 0));
-    });
-
-    gsap.ticker.add((time) => {
+    // 3. Add Lenis to GSAP's ticker to keep refresh loops perfectly synchronized
+    const updateTicker = (time: number) => {
       lenis.raf(time * 1000);
-    });
+    };
 
+    gsap.ticker.add(updateTicker);
     gsap.ticker.lagSmoothing(0);
 
-    // Mission timer increment interval
-    const timerInterval = setInterval(() => {
-      tickTimer();
-    }, 1000);
-
     return () => {
+      gsap.ticker.remove(updateTicker);
       lenis.destroy();
-      clearInterval(timerInterval);
     };
-  }, [setScrollVelocity, tickTimer]);
+  }, []);
 
   return <>{children}</>;
 }

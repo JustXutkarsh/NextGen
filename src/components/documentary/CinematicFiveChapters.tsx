@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import SplitType from 'split-type';
 import { useMissionStore } from '@/store/useMissionStore';
 import { sound } from '@/lib/sound';
 
@@ -15,12 +16,9 @@ export default function CinematicFiveChapters() {
   const { setProgress, setStatus } = useMissionStore();
 
   // States
-  const [chap1Step, setChap1Step] = useState(0);
-  const [chap2Step, setChap2Step] = useState(0);
   const [aiConfidence, setAiConfidence] = useState(12.0);
   const [scanStage, setScanStage] = useState('INITIALIZING');
   const [isThermal, setIsThermal] = useState(false);
-  const [chap4Step, setChap4Step] = useState(0);
   const [selectedTrack, setSelectedTrack] = useState<string>('Oil & Gas');
   const [isLockingTrack, setIsLockingTrack] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
@@ -76,7 +74,28 @@ export default function CinematicFiveChapters() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // ── CHAPTER 1: WHY AUTONOMOUS INSPECTION MATTERS (500vh) ──
+      // ── 1. KINETIC TYPOGRAPHY HEADLINE REVEALS ──────────────
+      const headlines = document.querySelectorAll('.kinetic-headline');
+      headlines.forEach((hl) => {
+        const textObj = new SplitType(hl as HTMLElement, { types: 'chars' });
+        if (textObj.chars) {
+          gsap.from(textObj.chars, {
+            opacity: 0,
+            y: 35,
+            rotateX: -90,
+            stagger: 0.02,
+            duration: 0.8,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: hl,
+              start: 'top 85%',
+              toggleActions: 'play none none reverse',
+            },
+          });
+        }
+      });
+
+      // ── 2. CHAPTER 01: SCRUBBED NARRATIVE REVEAL (500vh) ─────
       ScrollTrigger.create({
         trigger: '.chap-1-pin',
         start: 'top top',
@@ -85,25 +104,29 @@ export default function CinematicFiveChapters() {
         scrub: 1,
         onUpdate: (self) => {
           const p = self.progress;
-          const globalP = p * 0.2;
-          setProgress(globalP);
+          setProgress(p * 0.2);
           setStatus('CH 01 // THE ESSENCE');
 
-          if (p < 0.25) setChap1Step(0);
-          else if (p < 0.55) setChap1Step(1);
-          else if (p < 0.85) {
-            setChap1Step(2);
-            if (!declassified1) {
-              setDeclassified1(true);
-              sound.playDeclassifySFX();
-            }
-          } else {
-            setChap1Step(3);
+          if (p > 0.6 && !declassified1) {
+            setDeclassified1(true);
+            sound.playDeclassifySFX();
           }
         },
       });
 
-      // ── CHAPTER 2: JOURNEY INTO A REAL FACILITY - CHILE (700vh) ──
+      // Scrubbed parallax text movement in Chapter 1
+      gsap.to('.c1-scrub-text', {
+        y: -40,
+        opacity: 1,
+        scrollTrigger: {
+          trigger: '.chap-1-pin',
+          start: 'top top',
+          end: '+=3500',
+          scrub: 1,
+        },
+      });
+
+      // ── 3. CHAPTER 02: PARALLAX ATACAMA DEPLOYMENT (700vh) ───
       ScrollTrigger.create({
         trigger: '.chap-2-pin',
         start: 'top top',
@@ -112,19 +135,34 @@ export default function CinematicFiveChapters() {
         scrub: 1,
         onUpdate: (self) => {
           const p = self.progress;
-          const globalP = 0.2 + p * 0.25;
-          setProgress(globalP);
+          setProgress(0.2 + p * 0.25);
           setStatus('CH 02 // ATACAMA DISPATCH');
-
-          if (p < 0.2) setChap2Step(0);
-          else if (p < 0.45) setChap2Step(1);
-          else if (p < 0.7) setChap2Step(2);
-          else if (p < 0.88) setChap2Step(3);
-          else setChap2Step(4);
         },
       });
 
-      // ── CHAPTER 3: LIVE AI SCANNER - NORTH SEA SHELL (800vh) ──
+      // Parallax depth scrub layers inside Chapter 2
+      gsap.to('.c2-layer-bg', {
+        scale: 1.35,
+        yPercent: -15,
+        scrollTrigger: {
+          trigger: '.chap-2-pin',
+          start: 'top top',
+          end: '+=4500',
+          scrub: 1,
+        },
+      });
+
+      gsap.to('.c2-layer-fg', {
+        yPercent: -35,
+        scrollTrigger: {
+          trigger: '.chap-2-pin',
+          start: 'top top',
+          end: '+=4500',
+          scrub: 1,
+        },
+      });
+
+      // ── 4. CHAPTER 03: LIVE AI SCANNER SCRUB COUNT-UP (800vh) ─
       ScrollTrigger.create({
         trigger: '.chap-3-pin',
         start: 'top top',
@@ -133,21 +171,18 @@ export default function CinematicFiveChapters() {
         scrub: 1,
         onUpdate: (self) => {
           const p = self.progress;
-          const globalP = 0.45 + p * 0.25;
-          setProgress(globalP);
+          setProgress(0.45 + p * 0.25);
           setStatus('CH 03 // LIVE EDGE AI SCANNER');
 
-          // Mechanical sharp count ticker: 12.0% -> 94.7%
+          // Number count-up tied directly to scrub
           const conf = Math.min(94.7, 12.0 + p * 82.7);
           setAiConfidence(parseFloat(conf.toFixed(1)));
 
-          if (p < 0.2) setScanStage('SCANNING STORAGE TANK 4A...');
-          else if (p < 0.45) setScanStage('CORROSION BOUNDING BOX DETECTED');
-          else if (p < 0.7) {
+          if (p < 0.25) setScanStage('SCANNING STORAGE TANK 4A...');
+          else if (p < 0.5) setScanStage('CORROSION BOUNDING BOX DETECTED');
+          else if (p < 0.75) {
             setScanStage('THERMAL HEATMAP CONFIRMATION');
             setIsThermal(true);
-          } else if (p < 0.9) {
-            setScanStage('FINDING CONFIRMED: 94.7%');
           } else {
             setScanStage('CRITICAL: STRUCTURAL CORROSION · AUTO WORK ORDER CREATED');
           }
@@ -158,39 +193,34 @@ export default function CinematicFiveChapters() {
         },
       });
 
-      // ── CHAPTER 3.5 & 4: WHAT THE CASE STUDY DOESN'T SHOW & PROOF (600vh) ──
-      ScrollTrigger.create({
-        trigger: '.chap-4-pin',
-        start: 'top top',
-        end: '+=4200',
-        pin: true,
-        scrub: 1,
-        onUpdate: (self) => {
-          const p = self.progress;
-          const globalP = 0.7 + p * 0.15;
-          setProgress(globalP);
+      // ── 5. CHAPTER 04: PINNED HORIZONTAL BREAKOUT (PPT-KILLER) ─
+      const mm = gsap.matchMedia();
 
-          if (p < 0.35) {
-            setChap4Step(0);
-            setStatus('CH 03.5 // UNFILTERED STORY');
-            if (!declassified35) {
-              setDeclassified35(true);
-              sound.playDeclassifySFX();
-            }
-          } else if (p < 0.6) {
-            setChap4Step(1);
-            setStatus('CH 04 // ENTERPRISE PROOF');
-          } else if (p < 0.82) {
-            setChap4Step(2);
-            setStatus('CH 04 // ENTERPRISE PROOF');
-          } else {
-            setChap4Step(3);
-            setStatus('CH 04 // ENTERPRISE PROOF');
-          }
-        },
+      // Desktop (>768px): Pinned Horizontal Panel Breakout
+      mm.add('(min-width: 769px)', () => {
+        const panels = gsap.utils.toArray<HTMLElement>('.horizontal-panel');
+
+        gsap.to(panels, {
+          xPercent: -100 * (panels.length - 1),
+          ease: 'none',
+          scrollTrigger: {
+            trigger: '.chap-4-horizontal-wrapper',
+            pin: true,
+            scrub: 1,
+            end: () => '+=' + (panels.length * window.innerWidth),
+            onUpdate: (self) => {
+              const p = self.progress;
+              setProgress(0.7 + p * 0.15);
+              if (p > 0.8 && !declassified35) {
+                setDeclassified35(true);
+                sound.playDeclassifySFX();
+              }
+            },
+          },
+        });
       });
 
-      // ── CHAPTER 5: NESTGEN REVEAL & INTERACTIVE TRACK SELECTOR (500vh) ──
+      // ── 6. CHAPTER 05: NESTGEN REVEAL & CTA ──────────────────
       ScrollTrigger.create({
         trigger: '.chap-5-pin',
         start: 'top top',
@@ -198,18 +228,19 @@ export default function CinematicFiveChapters() {
         pin: true,
         scrub: 1,
         onUpdate: (self) => {
-          const p = self.progress;
-          const globalP = 0.85 + p * 0.15;
-          setProgress(globalP);
+          setProgress(0.85 + self.progress * 0.15);
           setStatus('CH 05 // NESTGEN BRIEFING');
         },
       });
+
+      // Refresh ScrollTrigger after font & image load
+      ScrollTrigger.refresh();
     }, containerRef);
 
     return () => ctx.revert();
   }, [declassified1, declassified35, setProgress, setStatus]);
 
-  // Canvas Laser Scanner Render for Chapter 3
+  // Canvas Laser Scanner Render
   useEffect(() => {
     const canvas = scanCanvasRef.current;
     if (!canvas) return;
@@ -256,88 +287,72 @@ export default function CinematicFiveChapters() {
 
   return (
     <div ref={containerRef} className="c5-container">
-      {/* Audio Sound Toggle */}
+      {/* Sound Toggle */}
       <button onClick={toggleSound} className="c5-sound-toggle">
         {isMuted ? 'SOUND: OFF' : '🔊 SOUND: ON'}
       </button>
 
-      {/* ── CHAPTER 1: WHY AUTONOMOUS INSPECTION MATTERS (500vh) ── */}
+      {/* ── CHAPTER 1: WHY AUTONOMOUS INSPECTION MATTERS ──────── */}
       <div className="c5-pin-wrapper chap-1-pin">
         <section className="c5-stage">
           <div className="c5-content-narrow">
             <div className="c5-tag">CHAPTER 01 // THE ESSENCE</div>
 
-            {chap1Step >= 0 && (
-              <h1 className="c5-heading-large kinetic-text">
-                Industrial inspection still depends on{' '}
-                <span className={`redaction-wrapper ${declassified1 ? 'declassified' : ''}`}>
-                  <span className="redaction-bar" />
-                  <span className="redaction-text">humans walking dangerous facilities.</span>
-                </span>
-              </h1>
-            )}
+            <h1 className="c5-heading-large kinetic-headline">
+              Industrial inspection still depends on{' '}
+              <span className={`redaction-wrapper ${declassified1 ? 'declassified' : ''}`}>
+                <span className="redaction-bar" />
+                <span className="redaction-text">humans walking dangerous facilities.</span>
+              </span>
+            </h1>
 
-            {chap1Step >= 1 && (
-              <p className="c5-text-body">
-                Oil refineries. Mining sites. Power grids. Commercial ports. Millions of physical assets are inspected manually, leaving massive blind spots between cycles.
-              </p>
-            )}
+            <p className="c5-text-body c1-scrub-text">
+              Oil refineries. Mining sites. Power grids. Commercial ports. Millions of physical assets are inspected manually, leaving massive blind spots between cycles.
+            </p>
 
-            {chap1Step >= 2 && (
-              <p className="c5-text-body highlight">
-                Physical AI changes the equation—from reactive repairs after failure to continuous autonomous vigilance.
-              </p>
-            )}
+            <p className="c5-text-body highlight">
+              Physical AI changes the equation—from reactive repairs after failure to continuous autonomous vigilance.
+            </p>
 
-            {chap1Step >= 3 && (
-              <div className="c5-scroll-prompt">
-                <span>SCROLL TO ENTER ATACAMA FACILITY</span>
-                <span className="c5-prompt-arrow">↓</span>
-              </div>
-            )}
+            <div className="c5-scroll-prompt">
+              <span>SCROLL TO ENTER ATACAMA FACILITY</span>
+              <span className="c5-prompt-arrow">↓</span>
+            </div>
           </div>
         </section>
       </div>
 
-      {/* ── CHAPTER 2: JOURNEY INTO A REAL FACILITY - CHILE (700vh) ── */}
+      {/* ── CHAPTER 2: PARALLAX ATACAMA DEPLOYMENT ────────────── */}
       <div className="c5-pin-wrapper chap-2-pin">
         <section className="c5-stage">
           <div className="c5-content-wide">
             <div className="c5-tag">CHAPTER 02 // REAL INCIDENT DEPLOYMENT</div>
-            <h2 className="c5-heading-medium">SQM Lithium Facility · Atacama Desert, Chile (2,400m Elevation)</h2>
+            <h2 className="c5-heading-medium kinetic-headline">
+              SQM Lithium Facility · Atacama Desert, Chile
+            </h2>
 
-            <div className="c5-media-frame">
+            <div className="c5-media-frame c2-parallax-box">
+              {/* Layer 1: Background Image (Slowest Scrub) */}
               <img
-                src={chap2Step >= 3 ? '/photos/site_gallery_07.png' : '/photos/dock_mountain_terrain.png'}
+                src="/photos/dock_mountain_terrain.png"
                 alt="Atacama Mining Facility"
-                className="c5-media-img"
-                style={{
-                  transform: chap2Step === 1 ? 'scale(1.15)' : chap2Step >= 2 ? 'scale(1.3)' : 'scale(1)',
-                  transition: 'transform 1s cubic-bezier(0.25, 1, 0.5, 1)',
-                }}
+                className="c5-media-img c2-layer-bg"
               />
 
-              <div className="c5-media-caption">
-                {chap2Step === 0 && <span>SATELLITE VIEW // SQM CHILE LITHIUM FACILITY</span>}
-                {chap2Step === 1 && <span>ZOOMING TO EVAPORATION PONDS</span>}
-                {chap2Step === 2 && <span>WEATHER: 4.2 KTS WINDS · SENSORS NOMINAL</span>}
-                {chap2Step === 3 && <span>ROBOTIC DOCK DOORS UNLOCKED · ROTORS SPINNING</span>}
-                {chap2Step >= 4 && <span style={{ color: 'var(--mission-green)' }}>TAKEOFF COMMENCED · BVLOS FLIGHT ACTIVE</span>}
+              {/* Layer 2: Midground Data Overlay */}
+              <div className="c2-layer-fg c5-media-caption">
+                <span>LAT: -23.8647° | ELEVATION: 2,400M | SQM LITHIUM FACILITY</span>
               </div>
             </div>
 
-            <div className="c5-text-body" style={{ marginTop: '2rem' }}>
-              {chap2Step <= 2 ? (
-                'In one of the world’s most desolate lithium facilities, manual leak inspection took days across vast evaporation ponds. Here, autonomous docks perform 24/7 BVLOS missions without human pilots.'
-              ) : (
-                'The automated dock powers up, verifies local weather telemetry, opens bay doors, and launches into autonomous flight.'
-              )}
-            </div>
+            <p className="c5-text-body" style={{ marginTop: '2rem' }}>
+              In one of the world’s most desolate environments, manual leak inspection took days across vast evaporation ponds. Here, autonomous docks perform 24/7 BVLOS missions without human pilots.
+            </p>
           </div>
         </section>
       </div>
 
-      {/* ── CHAPTER 3: LIVE AI SCANNER - NORTH SEA SHELL OIL & GAS (800vh) ── */}
+      {/* ── CHAPTER 3: LIVE AI SCANNER (SCRUB COUNT-UP) ───────── */}
       <div className="c5-pin-wrapper chap-3-pin">
         <section className="c5-stage c5-stage-dark">
           <div className="c5-inspection-grid">
@@ -358,10 +373,10 @@ export default function CinematicFiveChapters() {
             <div className="c5-inspection-sidebar">
               <div className="c5-location-tag">📍 NORTH SEA OFFSHORE PLATFORM // SHELL PETROLEUM</div>
               <div className="c5-tag">CHAPTER 03 // LIVE AI EDGE SCANNER</div>
-              <h3 className="c5-sidebar-title">Scanning Storage Tank 4A</h3>
+              <h3 className="c5-sidebar-title kinetic-headline">Scanning Storage Tank 4A</h3>
 
               <div className="c5-confidence-box">
-                <span className="c5-confidence-label">CONFIDENCE RATING (MECHANICAL TICKER)</span>
+                <span className="c5-confidence-label">CONFIDENCE RATING (SCRUB-LINKED TICKER)</span>
                 <span className="c5-confidence-val mechanical-font">{aiConfidence}%</span>
                 <div className="c5-confidence-bar">
                   <div className="c5-confidence-fill" style={{ width: `${aiConfidence}%` }} />
@@ -380,12 +395,51 @@ export default function CinematicFiveChapters() {
         </section>
       </div>
 
-      {/* ── CHAPTER 03.5 & 04: WHAT THE CASE STUDY DOESN'T SHOW & PROOF (600vh) ── */}
-      <div className="c5-pin-wrapper chap-4-pin">
-        <section className="c5-stage">
-          {chap4Step === 0 ? (
-            /* CHAPTER 03.5: WHAT THE CASE STUDY DOESN'T SHOW (QUIET TEXT MOMENT) */
-            <div className="c5-content-narrow" style={{ textAlign: 'center' }}>
+      {/* ── CHAPTER 04: PINNED HORIZONTAL BREAKOUT (THE PPT-KILLER) ── */}
+      <div className="chap-4-horizontal-wrapper">
+        <div className="horizontal-panels-container">
+          {/* PANEL 1: SHELL PETROLEUM */}
+          <div className="horizontal-panel panel-1">
+            <div className="panel-inner">
+              <div className="c5-tag">CHAPTER 04 // ENTERPRISE PROOF</div>
+              <div className="c5-proof-loc">📍 North Sea Offshore Rig</div>
+              <h2 className="c5-proof-stat mechanical-font">SHELL PETROLEUM</h2>
+              <div className="panel-metric">100X FLIGHT FREQUENCY</div>
+              <p className="c5-proof-detail">
+                Shell operates fully autonomous dock flights on floating offshore oil platforms in heavy North Sea maritime weather.
+              </p>
+            </div>
+          </div>
+
+          {/* PANEL 2: SQM CHILE */}
+          <div className="horizontal-panel panel-2">
+            <div className="panel-inner">
+              <div className="c5-tag">CHAPTER 04 // ENTERPRISE PROOF</div>
+              <div className="c5-proof-loc">📍 Atacama Desert, Chile</div>
+              <h2 className="c5-proof-stat mechanical-font">SQM LITHIUM</h2>
+              <div className="panel-metric">90 MIN LEAK DETECTION</div>
+              <p className="c5-proof-detail">
+                SQM Chile cut chemical leak detection time from 3 days down to under 90 minutes across vast evaporation ponds.
+              </p>
+            </div>
+          </div>
+
+          {/* PANEL 3: CSX RAILWAYS */}
+          <div className="horizontal-panel panel-3">
+            <div className="panel-inner">
+              <div className="c5-tag">CHAPTER 04 // ENTERPRISE PROOF</div>
+              <div className="c5-proof-loc">📍 United States Rail Mesh</div>
+              <h2 className="c5-proof-stat mechanical-font">CSX TRANSPORTATION</h2>
+              <div className="panel-metric">CREDIT-CARD RAIL DEFECTS</div>
+              <p className="c5-proof-detail">
+                CSX identifies credit-card sized structural rail anomalies at 100ft altitude without shutting down live train tracks.
+              </p>
+            </div>
+          </div>
+
+          {/* PANEL 4: CHAPTER 03.5 UNFILTERED STORY (THE PAUSE) */}
+          <div className="horizontal-panel panel-4">
+            <div className="panel-inner text-center">
               <div className="c5-tag" style={{ color: 'var(--mustard)' }}>
                 CHAPTER 03.5 // WHAT THE CASE STUDY DOESN'T SHOW
               </div>
@@ -406,52 +460,16 @@ export default function CinematicFiveChapters() {
                 </span>
               </blockquote>
             </div>
-          ) : (
-            /* CHAPTER 04: PROOF AT SCALE */
-            <div className="c5-content-wide">
-              <div className="c5-tag">CHAPTER 04 // ENTERPRISE PROOF AT SCALE</div>
-              <h2 className="c5-heading-medium">What Global Leaders Discovered</h2>
-
-              <div className="c5-proof-card">
-                <div className="c5-proof-image">
-                  <img
-                    src={
-                      chap4Step === 1
-                        ? '/photos/oilgas_dashboard.png'
-                        : chap4Step === 2
-                        ? '/photos/dock_mountain_terrain.png'
-                        : '/photos/railyard_corrosion_dashboard.png'
-                    }
-                    alt="Proof Case"
-                  />
-                </div>
-                <div className="c5-proof-info">
-                  <div className="c5-proof-loc">
-                    📍 {chap4Step === 1 ? 'North Sea Offshore Rig' : chap4Step === 2 ? 'Atacama Desert, Chile' : 'United States Rail Mesh'}
-                  </div>
-                  <h3 className="c5-proof-stat mechanical-font">
-                    {chap4Step === 1 ? '100X Flight Frequency' : chap4Step === 2 ? '90 Min Leak Detection' : 'Credit-Card Rail Defects'}
-                  </h3>
-                  <p className="c5-proof-detail">
-                    {chap4Step === 1
-                      ? 'Shell operates fully autonomous dock flights on floating offshore oil platforms in heavy North Sea maritime weather.'
-                      : chap4Step === 2
-                      ? 'SQM Chile cut chemical leak detection time from 3 days down to under 90 minutes across vast evaporation ponds.'
-                      : 'CSX identifies credit-card sized structural rail anomalies at 100ft altitude without shutting down live train tracks.'}
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-        </section>
+          </div>
+        </div>
       </div>
 
-      {/* ── CHAPTER 5: NESTGEN REVEAL & INTERACTIVE TARGET LOCK SELECTOR (500vh) ── */}
+      {/* ── CHAPTER 5: NESTGEN REVEAL & INTERACTIVE TARGET LOCK SELECTOR ── */}
       <div className="c5-pin-wrapper chap-5-pin">
         <section className="c5-stage c5-stage-reveal">
           <div className="c5-content-wide" style={{ textAlign: 'center' }}>
             <div className="c5-tag" style={{ color: 'var(--ink)' }}>SEPTEMBER 29, 2026 · ONLINE GLOBAL SUMMIT</div>
-            <h1 className="c5-reveal-title">NESTGEN '26</h1>
+            <h1 className="c5-reveal-title kinetic-headline">NESTGEN '26</h1>
 
             {/* REAL INTERACTIVE INDUSTRY TARGET LOCK SELECTOR */}
             <div className="c5-track-selector-title">
