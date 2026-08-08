@@ -17,7 +17,10 @@ export default function CinematicFiveChapters() {
 
   const { progress, setProgress, setStatus } = useMissionStore();
 
-  // Chapter & UI States
+  // Chapter 04 Active Panel State (0 to 5)
+  const [activePanelIdx, setActivePanelIdx] = useState(0);
+
+  // AI Scanner & UI States
   const [aiConfidence, setAiConfidence] = useState(12.0);
   const [scanStage, setScanStage] = useState('INITIALIZING');
   const [isThermal, setIsThermal] = useState(false);
@@ -28,6 +31,16 @@ export default function CinematicFiveChapters() {
   // Redaction Declassifying States
   const [declassified1, setDeclassified1] = useState(false);
   const [declassified35, setDeclassified35] = useState(false);
+
+  // Company Chips Data for Chapter 04
+  const companyChips = [
+    { id: 0, label: '01 // SHELL PETROLEUM', loc: 'North Sea Rig' },
+    { id: 1, label: '02 // SQM CHILE', loc: 'Atacama Desert' },
+    { id: 2, label: '03 // CSX RAILWAYS', loc: 'US Rail Mesh' },
+    { id: 3, label: '04 // ENBW & AIRBUS', loc: 'Europe Fleet' },
+    { id: 4, label: '05 // MPA SINGAPORE', loc: 'Global Ports' },
+    { id: 5, label: '06 // THE UNFILTERED TURN', loc: 'Internal Case Study' },
+  ];
 
   // Industry Track Speakers Data
   const trackData: Record<string, { speakers: string[]; quote: string; photo: string }> = {
@@ -161,7 +174,7 @@ export default function CinematicFiveChapters() {
         },
       });
 
-      // 5. CHAPTER 04: PINNED HORIZONTAL BREAKOUT PANELS (PPT-KILLER)
+      // 5. CHAPTER 04: PINNED HORIZONTAL BREAKOUT WITH PEEKING PANELS
       const mm = gsap.matchMedia();
 
       mm.add('(min-width: 769px)', () => {
@@ -174,19 +187,23 @@ export default function CinematicFiveChapters() {
             trigger: '.chap-4-horizontal-wrapper',
             pin: true,
             scrub: 1,
-            end: () => '+=' + (panels.length * window.innerWidth),
+            end: () => '+=' + (panels.length * window.innerWidth * 0.85),
             onUpdate: (self) => {
               const p = self.progress;
               setProgress(0.7 + p * 0.15);
 
-              if (p > 0.75) {
+              // Compute active panel index (0 to 5)
+              const idx = Math.min(5, Math.floor(p * 5.99));
+              setActivePanelIdx(idx);
+
+              if (idx === 5) {
                 setStatus('CH 03.5 // UNFILTERED STORY');
                 if (!declassified35) {
                   setDeclassified35(true);
                   sound.playDeclassifySFX();
                 }
               } else {
-                setStatus('CH 04 // ENTERPRISE PROOF');
+                setStatus(`CH 04 // ${companyChips[idx].label}`);
               }
             },
           },
@@ -262,7 +279,7 @@ export default function CinematicFiveChapters() {
       {/* ATMOSPHERIC SUN GLOW BACKGROUND */}
       <SunGlowOverlay progress={progress} />
 
-      {/* DREW FLOATING OVERLAY (GSAP QUICKTO CURSOR FOLLOWING) */}
+      {/* DREW FLOATING OVERLAY */}
       <DrewFloatingOverlay />
 
       {/* Sound Toggle */}
@@ -359,50 +376,114 @@ export default function CinematicFiveChapters() {
         </section>
       </div>
 
-      {/* ── CHAPTER 04: PINNED HORIZONTAL BREAKOUT (PANELS) ────── */}
+      {/* ── CHAPTER 04: PINNED HORIZONTAL BREAKOUT WITH PEEKING PANELS ── */}
       <div className="chap-4-horizontal-wrapper">
+        {/* AMBIENT BACKGROUND DEPTH LAYER: BLUEPRINT GRID + RADAR SWEEP */}
+        <div className="chap-4-ambient-bg">
+          <div className="chap-4-grid-lines" />
+          <div className="chap-4-radar-sweep" />
+        </div>
+
+        {/* PERSISTENT COMPANY PROGRESS MAP CHIPS (HEADER BAR) */}
+        <div className="chap-4-chip-header">
+          <div className="chip-header-label">CLASSIFIED ENTERPRISE DOSSIERS // PROOF AT SCALE</div>
+          <div className="chip-header-row">
+            {companyChips.map((chip) => (
+              <div
+                key={chip.id}
+                className={`company-chip ${activePanelIdx === chip.id ? 'active' : ''}`}
+              >
+                <span className="chip-indicator">{activePanelIdx === chip.id ? '●' : '○'}</span>
+                <span className="chip-title">{chip.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* HORIZONTAL PANELS CONTAINER (PEEKING PANELS BLEEDING IN) */}
         <div className="horizontal-panels-container">
           {/* PANEL 1: SHELL PETROLEUM */}
-          <div className="horizontal-panel panel-1">
-            <div className="panel-inner">
+          <div className={`horizontal-panel panel-1 ${activePanelIdx === 0 ? 'panel-active' : 'panel-peeking'}`}>
+            <div
+              className="panel-inner panel-card-bg"
+              style={{ backgroundImage: 'linear-gradient(to top, rgba(10,14,20,0.96) 20%, rgba(10,14,20,0.65) 100%), url(/photos/oilgas_dashboard.png)' }}
+            >
               <div className="c5-tag">CHAPTER 04 // ENTERPRISE PROOF</div>
-              <div className="c5-proof-loc">📍 North Sea Offshore Rig</div>
+              <div className="c5-proof-loc">📍 North Sea Offshore Oil Platform</div>
               <h2 className="c5-proof-stat mechanical-font">SHELL PETROLEUM</h2>
               <div className="panel-metric">100X FLIGHT FREQUENCY</div>
               <p className="c5-proof-detail">
-                Shell operates fully autonomous dock flights on floating offshore oil platforms in heavy North Sea maritime weather.
+                Shell operates fully autonomous dock flights on floating offshore oil platforms in heavy North Sea maritime weather without human pilots onboard.
               </p>
             </div>
           </div>
 
-          {/* PANEL 2: SQM CHILE */}
-          <div className="horizontal-panel panel-2">
-            <div className="panel-inner">
+          {/* PANEL 2: SQM LITHIUM CHILE */}
+          <div className={`horizontal-panel panel-2 ${activePanelIdx === 1 ? 'panel-active' : 'panel-peeking'}`}>
+            <div
+              className="panel-inner panel-card-bg"
+              style={{ backgroundImage: 'linear-gradient(to top, rgba(10,14,20,0.96) 20%, rgba(10,14,20,0.65) 100%), url(/photos/dock_mountain_terrain.png)' }}
+            >
               <div className="c5-tag">CHAPTER 04 // ENTERPRISE PROOF</div>
               <div className="c5-proof-loc">📍 Atacama Desert, Chile</div>
               <h2 className="c5-proof-stat mechanical-font">SQM LITHIUM</h2>
               <div className="panel-metric">90 MIN LEAK DETECTION</div>
               <p className="c5-proof-detail">
-                SQM Chile cut chemical leak detection time from 3 days down to under 90 minutes across vast evaporation ponds.
+                SQM Chile cut chemical leak detection time from 3 days down to under 90 minutes across vast lithium evaporation ponds.
               </p>
             </div>
           </div>
 
-          {/* PANEL 3: CSX RAILWAYS */}
-          <div className="horizontal-panel panel-3">
-            <div className="panel-inner">
+          {/* PANEL 3: CSX TRANSPORTATION */}
+          <div className={`horizontal-panel panel-3 ${activePanelIdx === 2 ? 'panel-active' : 'panel-peeking'}`}>
+            <div
+              className="panel-inner panel-card-bg"
+              style={{ backgroundImage: 'linear-gradient(to top, rgba(10,14,20,0.96) 20%, rgba(10,14,20,0.65) 100%), url(/photos/verkos_security_dashboard.png)' }}
+            >
               <div className="c5-tag">CHAPTER 04 // ENTERPRISE PROOF</div>
               <div className="c5-proof-loc">📍 United States Rail Mesh</div>
               <h2 className="c5-proof-stat mechanical-font">CSX TRANSPORTATION</h2>
               <div className="panel-metric">CREDIT-CARD RAIL DEFECTS</div>
               <p className="c5-proof-detail">
-                CSX identifies credit-card sized structural rail anomalies at 100ft altitude without shutting down live train tracks.
+                CSX identifies credit-card sized structural rail anomalies at 100ft altitude without shutting down live passenger or freight tracks.
               </p>
             </div>
           </div>
 
-          {/* PANEL 4: THE TURN (QUIET STRIPPED-BACK MOMENT) */}
-          <div className="horizontal-panel panel-4">
+          {/* PANEL 4: ENBW SOLAR & AIRBUS */}
+          <div className={`horizontal-panel panel-4 ${activePanelIdx === 3 ? 'panel-active' : 'panel-peeking'}`}>
+            <div
+              className="panel-inner panel-card-bg"
+              style={{ backgroundImage: 'linear-gradient(to top, rgba(10,14,20,0.96) 20%, rgba(10,14,20,0.65) 100%), url(/photos/site_gallery_05.png)' }}
+            >
+              <div className="c5-tag">CHAPTER 04 // ENTERPRISE PROOF</div>
+              <div className="c5-proof-loc">📍 Germany & European Solar Grids</div>
+              <h2 className="c5-proof-stat mechanical-font">ENBW SOLAR & AIRBUS</h2>
+              <div className="panel-metric">60% COST REDUCTION</div>
+              <p className="c5-proof-detail">
+                EnBW & Airbus deploy autonomous dock fleets for solar panel thermography and perimeter security, slashing security response times by 50%.
+              </p>
+            </div>
+          </div>
+
+          {/* PANEL 5: MPA SINGAPORE & UK POLICE */}
+          <div className={`horizontal-panel panel-5 ${activePanelIdx === 4 ? 'panel-active' : 'panel-peeking'}`}>
+            <div
+              className="panel-inner panel-card-bg"
+              style={{ backgroundImage: 'linear-gradient(to top, rgba(10,14,20,0.96) 20%, rgba(10,14,20,0.65) 100%), url(/photos/02_drone_software_console.png)' }}
+            >
+              <div className="c5-tag">CHAPTER 04 // ENTERPRISE PROOF</div>
+              <div className="c5-proof-loc">📍 Port of Singapore & UK NPCC</div>
+              <h2 className="c5-proof-stat mechanical-font">MPA SINGAPORE & UK POLICE</h2>
+              <div className="panel-metric">&lt; 90 SEC INCIDENT DISPATCH</div>
+              <p className="c5-proof-detail">
+                Expanded commercial port surveillance from 400m to 5km, dispatching autonomous first-responder aerial support in under 90 seconds.
+              </p>
+            </div>
+          </div>
+
+          {/* PANEL 6: THE UNFILTERED TURN (THE QUIET STRIPPED-BACK MOMENT) */}
+          <div className={`horizontal-panel panel-6 ${activePanelIdx === 5 ? 'panel-active' : 'panel-peeking'}`}>
             <div className="panel-inner text-center" style={{ background: '#000', border: '1px solid var(--mustard)' }}>
               <div className="c5-tag" style={{ color: 'var(--mustard)' }}>
                 THE TURN // WHAT THE CASE STUDY DOESN'T SHOW
@@ -416,6 +497,16 @@ export default function CinematicFiveChapters() {
               </blockquote>
             </div>
           </div>
+        </div>
+
+        {/* SCROLL PROGRESS DOTS AT BOTTOM OF SECTION */}
+        <div className="chap-4-progress-dots">
+          {companyChips.map((chip) => (
+            <span
+              key={chip.id}
+              className={`progress-dot ${activePanelIdx === chip.id ? 'active' : ''}`}
+            />
+          ))}
         </div>
       </div>
 
