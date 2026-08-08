@@ -18,32 +18,37 @@ export default function CinematicFiveChapters() {
   const [scanStage, setScanStage] = useState('INITIALIZING');
   const [isThermal, setIsThermal] = useState(false);
   const [chap4Step, setChap4Step] = useState(0);
+  const [selectedTrack, setSelectedTrack] = useState<string>('Oil & Gas');
   const [isMuted, setIsMuted] = useState(true);
 
-  // Cases array
-  const cases = [
-    {
-      company: 'SHELL PETROLEUM',
-      location: 'North Sea Offshore Platform',
-      stat: '100X Flight Frequency',
-      detail: 'Operating fully autonomous dock flights on offshore oil platforms in heavy maritime weather.',
+  // Industry Track Speakers Data from NestGen26_Context.md
+  const trackData: Record<string, { speakers: string[]; quote: string; photo: string }> = {
+    'Public Safety': {
+      speakers: ['UK Police (NPCC)', 'Belgian Police (Politie Westkust)', 'LA Metro', 'Fire Dept Kiel (BF Kiel)'],
+      quote: 'Drones arrive on scene in under 2 minutes, cutting water-rescue response times by up to 7 minutes.',
+      photo: '/photos/02_drone_software_console.png',
+    },
+    'Security': {
+      speakers: ['Airbus', 'Texas Instruments', 'Antea Group', 'Titan Protection'],
+      quote: 'Autonomous perimeter patrols cut break-in response times by 50% and operational costs by 60%.',
+      photo: '/photos/verkos_security_dashboard.png',
+    },
+    'Maritime': {
+      speakers: ['MPA Singapore (Maritime & Port Authority)', 'Port of Amsterdam'],
+      quote: 'Expanded port surveillance range from 400m to 5km with under 90-second incident response.',
+      photo: '/photos/site_gallery_05.png',
+    },
+    'Oil & Gas': {
+      speakers: ['Shell Petroleum', 'Marathon Petroleum', 'YPF Argentina', 'EnBW'],
+      quote: 'World’s first fully autonomous drone operation on a floating offshore oil platform in the North Sea.',
       photo: '/photos/oilgas_dashboard.png',
     },
-    {
-      company: 'SQM LITHIUM',
-      location: 'Atacama Desert, Chile',
-      stat: '90 Min Leak Detection',
-      detail: 'Reduced chemical leak detection time from 3 days to under 90 minutes across vast evaporation ponds.',
+    'Mining': {
+      speakers: ['SQM Lithium Chile', 'First Quantum Minerals', 'Siyanda Platinum'],
+      quote: 'Cut leak detection time from 3 days down to under 90 minutes across Atacama evaporation ponds.',
       photo: '/photos/dock_mountain_terrain.png',
     },
-    {
-      company: 'CSX TRANSPORTATION',
-      location: 'United States Rail Mesh',
-      stat: 'Credit-Card Rail Defects',
-      detail: 'Identifying credit-card sized structural anomalies at 100ft altitude without interrupting rail traffic.',
-      photo: '/photos/railyard_corrosion_dashboard.png',
-    },
-  ];
+  };
 
   const toggleSound = () => {
     const next = !isMuted;
@@ -69,7 +74,7 @@ export default function CinematicFiveChapters() {
         },
       });
 
-      // ── CHAPTER 2: JOURNEY INTO A REAL FACILITY (700vh) ──────
+      // ── CHAPTER 2: JOURNEY INTO A REAL FACILITY - CHILE (700vh) ──
       ScrollTrigger.create({
         trigger: '.chap-2-pin',
         start: 'top top',
@@ -86,7 +91,7 @@ export default function CinematicFiveChapters() {
         },
       });
 
-      // ── CHAPTER 3: WATCH AN AUTONOMOUS INSPECTION (800vh) ─────
+      // ── CHAPTER 3: LIVE AI SCANNER - NORTH SEA SHELL (800vh) ──
       ScrollTrigger.create({
         trigger: '.chap-3-pin',
         start: 'top top',
@@ -98,8 +103,8 @@ export default function CinematicFiveChapters() {
           const conf = Math.min(94.7, 12.0 + p * 82.7);
           setAiConfidence(parseFloat(conf.toFixed(1)));
 
-          if (p < 0.2) setScanStage('SCANNING SURFACE...');
-          else if (p < 0.45) setScanStage('ANOMALY BOUNDING BOX DETECTED');
+          if (p < 0.2) setScanStage('SCANNING STORAGE TANK 4A...');
+          else if (p < 0.45) setScanStage('CORROSION BOUNDING BOX DETECTED');
           else if (p < 0.7) {
             setScanStage('THERMAL HEATMAP CONFIRMATION');
             setIsThermal(true);
@@ -115,23 +120,23 @@ export default function CinematicFiveChapters() {
         },
       });
 
-      // ── CHAPTER 4: WHAT ENTERPRISES LEARNED & SILENCE (500vh) ─
+      // ── CHAPTER 3.5 & 4: WHAT THE CASE STUDY DOESN'T SHOW & PROOF (600vh) ──
       ScrollTrigger.create({
         trigger: '.chap-4-pin',
         start: 'top top',
-        end: '+=3500',
+        end: '+=4200',
         pin: true,
         scrub: 1,
         onUpdate: (self) => {
           const p = self.progress;
-          if (p < 0.3) setChap4Step(0);
-          else if (p < 0.6) setChap4Step(1);
-          else if (p < 0.85) setChap4Step(2);
-          else setChap4Step(3);
+          if (p < 0.35) setChap4Step(0);      // CHAPTER 03.5: What the Case Study Doesn't Show
+          else if (p < 0.6) setChap4Step(1); // Shell Case
+          else if (p < 0.82) setChap4Step(2); // SQM Case
+          else setChap4Step(3);               // CSX Case
         },
       });
 
-      // ── CHAPTER 5: NESTGEN REVEAL & REGISTRATION (500vh) ─────
+      // ── CHAPTER 5: NESTGEN REVEAL & INTERACTIVE TRACK SELECTOR (500vh) ──
       ScrollTrigger.create({
         trigger: '.chap-5-pin',
         start: 'top top',
@@ -229,17 +234,18 @@ export default function CinematicFiveChapters() {
         </section>
       </div>
 
-      {/* ── CHAPTER 2: JOURNEY INTO A REAL FACILITY (700vh) ────── */}
+      {/* ── CHAPTER 2: JOURNEY INTO A REAL FACILITY - CHILE (MINING ONLY) (700vh) ── */}
       <div className="c5-pin-wrapper chap-2-pin">
         <section className="c5-stage">
           <div className="c5-content-wide">
             <div className="c5-tag">CHAPTER 02 // REAL INCIDENT DEPLOYMENT</div>
-            <h2 className="c5-heading-medium">Atacama Desert, Chile · 2,400m Elevation</h2>
+            <h2 className="c5-heading-medium">SQM Lithium Facility · Atacama Desert, Chile (2,400m Elevation)</h2>
 
             <div className="c5-media-frame">
+              {/* Uses MINING ONLY imagery: dock_mountain_terrain.png & site_gallery_07.png */}
               <img
                 src={chap2Step >= 3 ? '/photos/site_gallery_07.png' : '/photos/dock_mountain_terrain.png'}
-                alt="Atacama Lithium Facility"
+                alt="Atacama Mining Facility"
                 className="c5-media-img"
                 style={{
                   transform: chap2Step === 1 ? 'scale(1.15)' : chap2Step >= 2 ? 'scale(1.3)' : 'scale(1)',
@@ -248,17 +254,17 @@ export default function CinematicFiveChapters() {
               />
 
               <div className="c5-media-caption">
-                {chap2Step === 0 && <span>SATELLITE VIEW // SQM LITHIUM FACILITY</span>}
-                {chap2Step === 1 && <span>ZOOMING TO HOLDING TANK 4A</span>}
-                {chap2Step === 2 && <span>WEATHER: 4.2 KTS WINDS · WINDSPEED NOMINAL</span>}
-                {chap2Step === 3 && <span>DOCK DOORS UNLOCKED · ROTORS SPINNING</span>}
+                {chap2Step === 0 && <span>SATELLITE VIEW // SQM CHILE LITHIUM FACILITY</span>}
+                {chap2Step === 1 && <span>ZOOMING TO EVAPORATION PONDS</span>}
+                {chap2Step === 2 && <span>WEATHER: 4.2 KTS WINDS · SENSORS NOMINAL</span>}
+                {chap2Step === 3 && <span>ROBOTIC DOCK DOORS UNLOCKED · ROTORS SPINNING</span>}
                 {chap2Step >= 4 && <span style={{ color: 'var(--mission-green)' }}>TAKEOFF COMMENCED · BVLOS FLIGHT ACTIVE</span>}
               </div>
             </div>
 
             <div className="c5-text-body" style={{ marginTop: '2rem' }}>
               {chap2Step <= 2 ? (
-                'In one of the world’s most desolate environments, manual leak inspection is practically impossible. Here, autonomous docks perform 24/7 BVLOS missions without human pilots.'
+                'In one of the world’s most desolate lithium facilities, manual leak inspection took days across vast evaporation ponds. Here, autonomous docks perform 24/7 BVLOS missions without human pilots.'
               ) : (
                 'The automated dock powers up, verifies local weather telemetry, opens bay doors, and launches into autonomous flight.'
               )}
@@ -267,14 +273,15 @@ export default function CinematicFiveChapters() {
         </section>
       </div>
 
-      {/* ── CHAPTER 3: WATCH AN AUTONOMOUS INSPECTION (800vh) ───── */}
+      {/* ── CHAPTER 3: LIVE AI SCANNER - NORTH SEA SHELL OIL & GAS (800vh) ── */}
       <div className="c5-pin-wrapper chap-3-pin">
         <section className="c5-stage c5-stage-dark">
           <div className="c5-inspection-grid">
             <div className="c5-inspection-media">
+              {/* Reserved EXCLUSIVELY for Shell Oil & Gas North Sea */}
               <img
                 src="/photos/oilgas_dashboard.png"
-                alt="Live Inspection"
+                alt="North Sea Platform Inspection"
                 style={{
                   width: '100%',
                   height: '100%',
@@ -286,8 +293,9 @@ export default function CinematicFiveChapters() {
             </div>
 
             <div className="c5-inspection-sidebar">
-              <div className="c5-tag">CHAPTER 03 // LIVE AI SCANNER</div>
-              <h3 className="c5-sidebar-title">Holding Tank 4A Structural Scan</h3>
+              <div className="c5-location-tag">📍 NORTH SEA OFFSHORE PLATFORM // SHELL PETROLEUM</div>
+              <div className="c5-tag">CHAPTER 03 // LIVE AI EDGE SCANNER</div>
+              <h3 className="c5-sidebar-title">Scanning Storage Tank 4A</h3>
 
               <div className="c5-confidence-box">
                 <span className="c5-confidence-label">CONFIDENCE RATING</span>
@@ -302,70 +310,124 @@ export default function CinematicFiveChapters() {
               </div>
 
               <div className="c5-quote-callout">
-                “This wasn't a simulated demo. This happened at a North Sea petroleum platform.”
+                “World’s first fully autonomous drone operation on a floating offshore oil platform in the North Sea.”
               </div>
             </div>
           </div>
         </section>
       </div>
 
-      {/* ── CHAPTER 4: WHAT ENTERPRISES LEARNED & SILENCE (500vh) ─ */}
+      {/* ── CHAPTER 03.5 & 04: WHAT THE CASE STUDY DOESN'T SHOW & PROOF (600vh) ── */}
       <div className="c5-pin-wrapper chap-4-pin">
         <section className="c5-stage">
-          {chap4Step < 3 ? (
+          {chap4Step === 0 ? (
+            /* CHAPTER 03.5: WHAT THE CASE STUDY DOESN'T SHOW (QUIET TEXT MOMENT) */
+            <div className="c5-content-narrow" style={{ textAlign: 'center' }}>
+              <div className="c5-tag" style={{ color: 'var(--mustard)' }}>
+                CHAPTER 03.5 // WHAT THE CASE STUDY DOESN'T SHOW
+              </div>
+              <blockquote className="c5-silence-quote">
+                “These wins didn't happen overnight.
+                <br /><br />
+                <span className="c5-quote-dim">
+                  There was a first pilot project that failed.
+                  <br />
+                  Months spent building the business case internally.
+                  <br />
+                  One person who finally said yes to the budget.
+                </span>
+                <br /><br />
+                <strong>That part never makes the case study. At NestGen, it does.</strong>”
+              </blockquote>
+            </div>
+          ) : (
+            /* CHAPTER 04: PROOF AT SCALE */
             <div className="c5-content-wide">
               <div className="c5-tag">CHAPTER 04 // ENTERPRISE PROOF AT SCALE</div>
               <h2 className="c5-heading-medium">What Global Leaders Discovered</h2>
 
               <div className="c5-proof-card">
                 <div className="c5-proof-image">
-                  <img src={cases[chap4Step].photo} alt={cases[chap4Step].company} />
+                  <img
+                    src={
+                      chap4Step === 1
+                        ? '/photos/oilgas_dashboard.png'
+                        : chap4Step === 2
+                        ? '/photos/dock_mountain_terrain.png'
+                        : '/photos/railyard_corrosion_dashboard.png'
+                    }
+                    alt="Proof Case"
+                  />
                 </div>
                 <div className="c5-proof-info">
-                  <div className="c5-proof-loc">📍 {cases[chap4Step].location}</div>
-                  <h3 className="c5-proof-stat">{cases[chap4Step].stat}</h3>
-                  <p className="c5-proof-detail">{cases[chap4Step].detail}</p>
+                  <div className="c5-proof-loc">
+                    📍 {chap4Step === 1 ? 'North Sea Offshore Rig' : chap4Step === 2 ? 'Atacama Desert, Chile' : 'United States Rail Mesh'}
+                  </div>
+                  <h3 className="c5-proof-stat">
+                    {chap4Step === 1 ? '100X Flight Frequency' : chap4Step === 2 ? '90 Min Leak Detection' : 'Credit-Card Rail Defects'}
+                  </h3>
+                  <p className="c5-proof-detail">
+                    {chap4Step === 1
+                      ? 'Shell operates fully autonomous dock flights on floating offshore oil platforms in heavy North Sea maritime weather.'
+                      : chap4Step === 2
+                      ? 'SQM Chile cut chemical leak detection time from 3 days down to under 90 minutes across vast evaporation ponds.'
+                      : 'CSX identifies credit-card sized structural rail anomalies at 100ft altitude without shutting down live train tracks.'}
+                  </p>
                 </div>
               </div>
-            </div>
-          ) : (
-            <div className="c5-content-narrow" style={{ textAlign: 'center' }}>
-              <div className="c5-tag">CHAPTER 04 // THE PAUSE</div>
-              <blockquote className="c5-silence-quote">
-                “Companies build autonomous programs in silence.
-                <br />
-                <span className="c5-quote-dim">
-                  The failed pilots. The procurement headaches. The boardroom debates.
-                </span>
-                <br />
-                That conversation normally stays locked inside corporate walls.
-                <br /><br />
-                <strong>NestGen is the one day a year it doesn't.</strong>”
-              </blockquote>
             </div>
           )}
         </section>
       </div>
 
-      {/* ── CHAPTER 5: NESTGEN REVEAL & REGISTRATION (500vh) ───── */}
+      {/* ── CHAPTER 5: NESTGEN REVEAL & INTERACTIVE TRACK SELECTOR (500vh) ───── */}
       <div className="c5-pin-wrapper chap-5-pin">
         <section className="c5-stage c5-stage-reveal">
-          <div className="c5-content-narrow" style={{ textAlign: 'center' }}>
+          <div className="c5-content-wide" style={{ textAlign: 'center' }}>
             <div className="c5-tag" style={{ color: 'var(--ink)' }}>SEPTEMBER 29, 2026 · ONLINE GLOBAL SUMMIT</div>
             <h1 className="c5-reveal-title">NESTGEN '26</h1>
-            <p className="c5-reveal-sub">
-              One day. Real architectures. Real failures. The exact playbooks behind autonomous drone operations.
-            </p>
 
-            <div className="c5-speaker-roster">
-              {['UK POLICE (NPCC)', 'AIRBUS', 'SHELL', 'SQM CHILE', 'MPA SINGAPORE', 'CSX RAILWAYS'].map((spk, idx) => (
-                <span key={idx} className="c5-speaker-badge">
-                  ✔ {spk}
-                </span>
+            {/* REAL INTERACTIVE INDUSTRY TRACK SELECTOR */}
+            <div className="c5-track-selector-title">
+              SELECT YOUR INDUSTRY TRACK TO REVEAL CONFIRMED SPEAKERS & PLAYBOOKS:
+            </div>
+
+            <div className="c5-track-buttons">
+              {Object.keys(trackData).map((track) => (
+                <button
+                  key={track}
+                  onClick={() => setSelectedTrack(track)}
+                  className={`c5-track-btn ${selectedTrack === track ? 'active' : ''}`}
+                >
+                  {track}
+                </button>
               ))}
             </div>
 
-            <div style={{ marginTop: '3rem' }}>
+            {/* TRACK DETAILS DISPLAY */}
+            <div className="c5-track-display">
+              <div className="c5-track-speakers">
+                <span className="c5-track-label">CONFIRMED SPEAKERS FOR {selectedTrack.toUpperCase()}:</span>
+                <div className="c5-speaker-roster">
+                  {trackData[selectedTrack].speakers.map((spk, idx) => (
+                    <span key={idx} className="c5-speaker-badge">
+                      ✔ {spk}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="c5-track-quote">
+                “{trackData[selectedTrack].quote}”
+              </div>
+            </div>
+
+            {/* CLOSING THE NARRATIVE LOOP (ECHOING CHAPTER 01) */}
+            <div className="c5-loop-quote">
+              “Chapter 01 showed why humans still walk into the danger. On September 29th, hear from the pioneers proving it doesn't have to stay that way.”
+            </div>
+
+            <div style={{ marginTop: '2.5rem' }}>
               <a
                 href="https://nestgen.org"
                 target="_blank"

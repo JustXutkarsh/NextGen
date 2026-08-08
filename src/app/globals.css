@@ -106,6 +106,17 @@ img {
   margin-bottom: 1.8rem;
 }
 
+.c5-location-tag {
+  font-family: var(--font-pixel);
+  font-size: 0.5rem;
+  color: var(--terracotta);
+  background: rgba(201, 106, 53, 0.12);
+  border: 1px solid var(--terracotta);
+  padding: 0.4rem 0.8rem;
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+
 .c5-heading-large {
   font-family: var(--font-pixel);
   font-size: clamp(1.6rem, 3.5vw, 3rem);
@@ -209,10 +220,10 @@ img {
 }
 
 .c5-inspection-sidebar {
-  padding: 2.5rem 2rem;
+  padding: 2rem 1.8rem;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.2rem;
   justify-content: center;
   border-left: 1px solid var(--dark-border);
 }
@@ -235,7 +246,7 @@ img {
 }
 
 .c5-confidence-val {
-  font-size: 3rem;
+  font-size: 2.8rem;
   font-weight: 700;
   color: var(--mustard);
   line-height: 1;
@@ -322,24 +333,72 @@ img {
 }
 
 .c5-quote-dim {
-  color: rgba(255,255,255,0.5);
+  color: rgba(255,255,255,0.55);
 }
 
-/* ── CHAPTER 5: REVEAL & CTA ─────────────────────────── */
+/* ── CHAPTER 5: REVEAL & INTERACTIVE TRACK SELECTOR ──── */
 .c5-reveal-title {
   font-family: var(--font-pixel);
-  font-size: clamp(3rem, 8vw, 6.5rem);
+  font-size: clamp(2.8rem, 7vw, 6rem);
   color: var(--ink);
   margin-bottom: 1.5rem;
   line-height: 1.1;
 }
 
-.c5-reveal-sub {
-  font-size: 1.1rem;
-  color: rgba(42, 31, 22, 0.8);
-  max-width: 600px;
-  margin: 0 auto 2.5rem;
-  font-weight: 400;
+.c5-track-selector-title {
+  font-family: var(--font-pixel);
+  font-size: 0.5rem;
+  color: var(--ink);
+  opacity: 0.85;
+  letter-spacing: 0.1em;
+  margin-bottom: 1rem;
+}
+
+.c5-track-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.c5-track-btn {
+  font-family: var(--font-pixel);
+  font-size: 0.48rem;
+  padding: 0.6rem 1.2rem;
+  background: var(--ink);
+  color: var(--mustard);
+  border: 2px solid var(--ink);
+  cursor: pointer;
+  transition: all 0.15s ease-out;
+}
+
+.c5-track-btn.active, .c5-track-btn:hover {
+  background: #000;
+  color: #FFF;
+  border-color: #000;
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.25);
+}
+
+.c5-track-display {
+  background: rgba(42, 31, 22, 0.1);
+  border: 2px solid var(--ink);
+  padding: 1.5rem;
+  max-width: 800px;
+  margin: 0 auto 2rem;
+  text-align: center;
+}
+
+.c5-track-speakers {
+  margin-bottom: 1rem;
+}
+
+.c5-track-label {
+  font-family: var(--font-pixel);
+  font-size: 0.45rem;
+  color: var(--ink);
+  display: block;
+  margin-bottom: 0.75rem;
 }
 
 .c5-speaker-roster {
@@ -347,8 +406,6 @@ img {
   gap: 0.6rem;
   flex-wrap: wrap;
   justify-content: center;
-  max-width: 750px;
-  margin: 0 auto;
 }
 
 .c5-speaker-badge {
@@ -357,6 +414,25 @@ img {
   background: var(--ink);
   color: var(--mustard);
   padding: 0.5rem 0.9rem;
+}
+
+.c5-track-quote {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--ink);
+  font-style: italic;
+  line-height: 1.6;
+}
+
+.c5-loop-quote {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--ink);
+  max-width: 700px;
+  margin: 0 auto 2rem;
+  line-height: 1.6;
+  border-top: 1.5px solid rgba(42,31,22,0.3);
+  padding-top: 1.5rem;
 }
 
 .c5-cta-btn {
@@ -382,9 +458,9 @@ img {
 }
 
 .c5-cta-footnote {
-  margin-top: 1.5rem;
+  margin-top: 1.2rem;
   font-size: 0.7rem;
-  color: rgba(42, 31, 22, 0.6);
+  color: rgba(42, 31, 22, 0.65);
   letter-spacing: 0.1em;
 }
 
