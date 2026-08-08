@@ -102,9 +102,11 @@ export default function DrewFloatingOverlay() {
     const body = bodyRef.current;
     if (!wrapper || !body) return;
 
+    const isMobile = window.innerWidth <= 768;
+
     gsap.set(wrapper, {
-      x: window.innerWidth * 0.35,
-      y: window.innerHeight * 0.28,
+      x: isMobile ? 12 : window.innerWidth * 0.35,
+      y: isMobile ? 65 : window.innerHeight * 0.28,
     });
 
     const introTl = gsap.timeline({
@@ -116,7 +118,7 @@ export default function DrewFloatingOverlay() {
     introTl.fromTo(
       wrapper,
       { scale: 0, opacity: 0, y: -150 },
-      { scale: 1, opacity: 1, y: window.innerHeight * 0.28, duration: 1.2, ease: 'back.out(1.4)' }
+      { scale: 1, opacity: 1, y: isMobile ? 65 : window.innerHeight * 0.28, duration: 1.2, ease: 'back.out(1.4)' }
     );
 
     const t1 = setTimeout(() => setIntroStep(1), 1500);
@@ -141,62 +143,62 @@ export default function DrewFloatingOverlay() {
     };
   }, []);
 
-  // REAL-TIME CURSOR-FOLLOWING & MAGNETIC SPEECH CLOUD EFFECT
+  // REAL-TIME CURSOR-FOLLOWING (DESKTOP) & SMOOTH SCROLL POSITIONING (MOBILE)
   useEffect(() => {
     if (!isCursorEnabled || !wrapperRef.current) return;
 
     const wrapper = wrapperRef.current;
     const cloud = cloudRef.current;
 
-    const xTo = gsap.quickTo(wrapper, 'x', { duration: 0.4, ease: 'power3' });
-    const yTo = gsap.quickTo(wrapper, 'y', { duration: 0.4, ease: 'power3' });
-
-    let cloudXTo: any = null;
-    let cloudYTo: any = null;
-    if (cloud) {
-      cloudXTo = gsap.quickTo(cloud, 'x', { duration: 0.25, ease: 'power3' });
-      cloudYTo = gsap.quickTo(cloud, 'y', { duration: 0.25, ease: 'power3' });
-    }
-
-    const handleMouseMove = (e: MouseEvent) => {
-      xTo(e.clientX + 35);
-      yTo(e.clientY + 25);
-
-      if (cloud && cloudXTo && cloudYTo) {
-        const r = cloud.getBoundingClientRect();
-        const relX = e.clientX - (r.left + r.width / 2);
-        const relY = e.clientY - (r.top + r.height / 2);
-        const dist = Math.sqrt(relX * relX + relY * relY);
-
-        if (dist < 200) {
-          cloudXTo(relX * 0.25);
-          cloudYTo(relY * 0.25);
-        } else {
-          cloudXTo(0);
-          cloudYTo(0);
-        }
-      }
-    };
-
     const mm = gsap.matchMedia();
 
-    mm.add('(pointer: fine)', () => {
+    // FINE POINTER (LAPTOPS / DESKTOPS): CURSOR FOLLOW
+    mm.add('(pointer: fine) and (min-width: 769px)', () => {
+      const xTo = gsap.quickTo(wrapper, 'x', { duration: 0.4, ease: 'power3' });
+      const yTo = gsap.quickTo(wrapper, 'y', { duration: 0.4, ease: 'power3' });
+
+      let cloudXTo: any = null;
+      let cloudYTo: any = null;
+      if (cloud) {
+        cloudXTo = gsap.quickTo(cloud, 'x', { duration: 0.25, ease: 'power3' });
+        cloudYTo = gsap.quickTo(cloud, 'y', { duration: 0.25, ease: 'power3' });
+      }
+
+      const handleMouseMove = (e: MouseEvent) => {
+        xTo(e.clientX + 35);
+        yTo(e.clientY + 25);
+
+        if (cloud && cloudXTo && cloudYTo) {
+          const r = cloud.getBoundingClientRect();
+          const relX = e.clientX - (r.left + r.width / 2);
+          const relY = e.clientY - (r.top + r.height / 2);
+          const dist = Math.sqrt(relX * relX + relY * relY);
+
+          if (dist < 200) {
+            cloudXTo(relX * 0.25);
+            cloudYTo(relY * 0.25);
+          } else {
+            cloudXTo(0);
+            cloudYTo(0);
+          }
+        }
+      };
+
       window.addEventListener('mousemove', handleMouseMove);
+      return () => window.removeEventListener('mousemove', handleMouseMove);
     });
 
-    mm.add('(pointer: coarse), (max-width: 768px)', () => {
+    // TOUCH PHONES & TABLETS: PERSISTENT FLOATING POSITION
+    mm.add('(max-width: 768px)', () => {
       gsap.to(wrapper, {
-        x: '+=40',
-        y: '+=30',
-        duration: 3,
-        ease: 'sine.inOut',
-        repeat: -1,
-        yoyo: true,
+        x: 12,
+        y: 65,
+        duration: 0.5,
+        ease: 'power2.out',
       });
     });
 
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
       mm.revert();
     };
   }, [isCursorEnabled]);

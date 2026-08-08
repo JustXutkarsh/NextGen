@@ -89,7 +89,7 @@ export default function CinematicFiveChapters() {
     }, 280);
   };
 
-  // CHIP CLICK NAVIGATOR (WORKS ON DESKTOP & MOBILE)
+  // CHIP CLICK NAVIGATOR (ANIMATES GSAP SCROLLTRIGGER POSITION ON MOBILE & DESKTOP)
   const handleChipClick = (id: number) => {
     setActivePanelIdx(id);
     const chip = companyChips[id];
@@ -99,10 +99,14 @@ export default function CinematicFiveChapters() {
       setStatus(`CH 04 // ${chip.code} // ${chip.label}`);
     }
 
-    // Scroll directly to target panel element on mobile
-    const panelEl = document.querySelector(`.horizontal-panel.panel-${id + 1}`);
-    if (panelEl && window.innerWidth <= 768) {
-      panelEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const wrapper = document.querySelector('.chap-4-horizontal-wrapper');
+    if (wrapper) {
+      const st = ScrollTrigger.getAll().find((s) => s.trigger === wrapper);
+      if (st) {
+        const targetProgress = id / 5;
+        const targetY = st.start + targetProgress * (st.end - st.start);
+        window.scrollTo({ top: targetY, behavior: 'smooth' });
+      }
     }
   };
 
@@ -196,7 +200,7 @@ export default function CinematicFiveChapters() {
         trigger: '.chap-1-pin',
         start: 'top top',
         end: '+=1800',
-        pin: window.innerWidth > 768,
+        pin: true,
         scrub: 0.8,
         onUpdate: (self) => {
           const p = self.progress;
@@ -210,7 +214,7 @@ export default function CinematicFiveChapters() {
         trigger: '.chap-2-pin',
         start: 'top top',
         end: '+=2000',
-        pin: window.innerWidth > 768,
+        pin: true,
         scrub: 0.8,
         onUpdate: (self) => {
           const p = self.progress;
@@ -224,7 +228,7 @@ export default function CinematicFiveChapters() {
         trigger: '.chap-3-pin',
         start: 'top top',
         end: '+=2400',
-        pin: window.innerWidth > 768,
+        pin: true,
         scrub: 0.8,
         onUpdate: (self) => {
           const p = self.progress;
@@ -249,62 +253,33 @@ export default function CinematicFiveChapters() {
         },
       });
 
-      // 5. CHAPTER 04: MATCHMEDIA DESKTOP PINNED HORIZONTAL VS MOBILE STACKED SCROLL
-      const mm = gsap.matchMedia();
+      // 5. CHAPTER 04: PINNED HORIZONTAL CAROUSEL FOR ALL DEVICES (DESKTOP & MOBILE)
+      const panels = gsap.utils.toArray<HTMLElement>('.horizontal-panel');
+      const isMobile = window.innerWidth <= 768;
 
-      // DESKTOP: PINNED HORIZONTAL CAROUSEL
-      mm.add('(min-width: 769px)', () => {
-        const panels = gsap.utils.toArray<HTMLElement>('.horizontal-panel');
+      gsap.to(panels, {
+        xPercent: -100 * (panels.length - 1),
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '.chap-4-horizontal-wrapper',
+          pin: true,
+          scrub: 0.8,
+          end: () => '+=' + (panels.length * window.innerWidth * (isMobile ? 0.75 : 0.55)),
+          onUpdate: (self) => {
+            const p = self.progress;
+            setProgress(0.7 + p * 0.15);
 
-        gsap.to(panels, {
-          xPercent: -100 * (panels.length - 1),
-          ease: 'none',
-          scrollTrigger: {
-            trigger: '.chap-4-horizontal-wrapper',
-            pin: true,
-            scrub: 0.8,
-            end: () => '+=' + (panels.length * window.innerWidth * 0.55),
-            onUpdate: (self) => {
-              const p = self.progress;
-              setProgress(0.7 + p * 0.15);
+            const idx = Math.min(5, Math.floor(p * 5.99));
+            setActivePanelIdx(idx);
 
-              const idx = Math.min(5, Math.floor(p * 5.99));
-              setActivePanelIdx(idx);
-
-              const currentChip = companyChips[idx];
-              if (idx === 5) {
-                setStatus('CH 03.5 // UNFILTERED TURN STORY');
-              } else {
-                setStatus(`CH 04 // ${currentChip.code} // ${currentChip.label}`);
-              }
-            },
+            const currentChip = companyChips[idx];
+            if (idx === 5) {
+              setStatus('CH 03.5 // UNFILTERED TURN STORY');
+            } else {
+              setStatus(`CH 04 // ${currentChip.code} // ${currentChip.label}`);
+            }
           },
-        });
-      });
-
-      // MOBILE (< 769px): NATURAL STACKED SCROLL WITH CARD SCROLL TRIGGER DETECT
-      mm.add('(max-width: 768px)', () => {
-        const panels = gsap.utils.toArray<HTMLElement>('.horizontal-panel');
-
-        panels.forEach((panel, idx) => {
-          ScrollTrigger.create({
-            trigger: panel,
-            start: 'top 65%',
-            end: 'bottom 35%',
-            onEnter: () => updateMobilePanel(idx),
-            onEnterBack: () => updateMobilePanel(idx),
-          });
-        });
-
-        function updateMobilePanel(idx: number) {
-          setActivePanelIdx(idx);
-          const currentChip = companyChips[idx];
-          if (idx === 5) {
-            setStatus('CH 03.5 // UNFILTERED TURN STORY');
-          } else {
-            setStatus(`CH 04 // ${currentChip.code} // ${currentChip.label}`);
-          }
-        }
+        },
       });
 
       // 6. CHAPTER 05: NESTGEN REVEAL & CTA
@@ -312,7 +287,7 @@ export default function CinematicFiveChapters() {
         trigger: '.chap-5-pin',
         start: 'top top',
         end: '+=1800',
-        pin: window.innerWidth > 768,
+        pin: true,
         scrub: 0.8,
         onUpdate: (self) => {
           setProgress(0.85 + self.progress * 0.15);
