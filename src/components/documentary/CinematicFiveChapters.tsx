@@ -6,7 +6,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import SplitType from 'split-type';
 import { useMissionStore } from '@/store/useMissionStore';
 import { sound } from '@/lib/sound';
-import IcarusGuide from '@/components/ui/IcarusGuide';
+import DrewDrone from '@/components/ui/DrewDrone';
 import SunGlowOverlay from '@/components/ui/SunGlowOverlay';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -17,7 +17,11 @@ export default function CinematicFiveChapters() {
 
   const { progress, setProgress, setStatus } = useMissionStore();
 
-  // States
+  // Intro Sequence States
+  const [introStep, setIntroStep] = useState(0);
+  const [introComplete, setIntroComplete] = useState(false);
+
+  // Chapter & UI States
   const [aiConfidence, setAiConfidence] = useState(12.0);
   const [scanStage, setScanStage] = useState('INITIALIZING');
   const [isThermal, setIsThermal] = useState(false);
@@ -75,9 +79,44 @@ export default function CinematicFiveChapters() {
     }, 280);
   };
 
+  // PART 1: THE INTRO SEQUENCE (ONE-TIME ENTRANCE ON PAGE LOAD)
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // ── 1. KINETIC TYPOGRAPHY HEADLINE REVEALS ──────────────
+      const tl = gsap.timeline();
+
+      // 1. Drew flies in from top-right with back.out(1.4) easing
+      tl.fromTo(
+        '#drew-hero',
+        { x: 300, y: -200, opacity: 0, scale: 0.5 },
+        { x: 0, y: 0, opacity: 1, scale: 1, duration: 1.4, ease: 'back.out(1.4)' }
+      );
+
+      // 2. Speech cloud pops in with back.out(1.7) easing
+      tl.fromTo(
+        '#drew-hero .drew-speech-cloud',
+        { scale: 0, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.6, ease: 'back.out(1.7)' },
+        '-=0.4'
+      );
+    }, containerRef);
+
+    // Sequence Line 1 -> Line 2 -> Line 3 (~1.2s delay per line)
+    const t1 = setTimeout(() => setIntroStep(1), 1600);
+    const t2 = setTimeout(() => setIntroStep(2), 3200);
+    const t3 = setTimeout(() => setIntroComplete(true), 4600);
+
+    return () => {
+      ctx.revert();
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+    };
+  }, []);
+
+  // MASTER SCROLLTRIGGER CHOREOGRAPHY
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // 1. KINETIC TYPOGRAPHY REVEALS
       const headlines = document.querySelectorAll('.kinetic-headline');
       headlines.forEach((hl) => {
         const textObj = new SplitType(hl as HTMLElement, { types: 'chars' });
@@ -98,7 +137,7 @@ export default function CinematicFiveChapters() {
         }
       });
 
-      // ── 2. CHAPTER 01: SCRUBBED NARRATIVE REVEAL (500vh) ─────
+      // 2. CHAPTER 01: THE ESSENCE (500vh)
       ScrollTrigger.create({
         trigger: '.chap-1-pin',
         start: 'top top',
@@ -108,7 +147,7 @@ export default function CinematicFiveChapters() {
         onUpdate: (self) => {
           const p = self.progress;
           setProgress(p * 0.2);
-          setStatus('CH 01 // ICARUS HOOK');
+          setStatus('CH 01 // THE ESSENCE');
 
           if (p > 0.6 && !declassified1) {
             setDeclassified1(true);
@@ -117,7 +156,7 @@ export default function CinematicFiveChapters() {
         },
       });
 
-      // ── 3. CHAPTER 02: PARALLAX ATACAMA DEPLOYMENT (700vh) ───
+      // 3. CHAPTER 02: ATACAMA DISPATCH (700vh)
       ScrollTrigger.create({
         trigger: '.chap-2-pin',
         start: 'top top',
@@ -131,7 +170,7 @@ export default function CinematicFiveChapters() {
         },
       });
 
-      // ── 4. CHAPTER 03: LIVE AI SCANNER SCRUB COUNT-UP (800vh) ─
+      // 4. CHAPTER 03: LIVE AI SCANNER (800vh)
       ScrollTrigger.create({
         trigger: '.chap-3-pin',
         start: 'top top',
@@ -141,7 +180,7 @@ export default function CinematicFiveChapters() {
         onUpdate: (self) => {
           const p = self.progress;
           setProgress(0.45 + p * 0.25);
-          setStatus('CH 03 // SCANNER PRIDE');
+          setStatus('CH 03 // LIVE AI SCANNER');
 
           const conf = Math.min(94.7, 12.0 + p * 82.7);
           setAiConfidence(parseFloat(conf.toFixed(1)));
@@ -161,7 +200,7 @@ export default function CinematicFiveChapters() {
         },
       });
 
-      // ── 5. CHAPTER 04: PINNED HORIZONTAL BREAKOUT (4 PANELS) ─
+      // 5. CHAPTER 04: PINNED HORIZONTAL BREAKOUT PANELS (PPT-KILLER)
       const mm = gsap.matchMedia();
 
       mm.add('(min-width: 769px)', () => {
@@ -187,7 +226,7 @@ export default function CinematicFiveChapters() {
         });
       });
 
-      // ── 6. CHAPTER 05: NESTGEN REVEAL & CTA ──────────────────
+      // 6. CHAPTER 05: NESTGEN REVEAL & CTA
       ScrollTrigger.create({
         trigger: '.chap-5-pin',
         start: 'top top',
@@ -196,7 +235,7 @@ export default function CinematicFiveChapters() {
         scrub: 1,
         onUpdate: (self) => {
           setProgress(0.85 + self.progress * 0.15);
-          setStatus('CH 05 // WINGS THAT DON’T MELT');
+          setStatus('CH 05 // NESTGEN BRIEFING');
         },
       });
 
@@ -253,7 +292,7 @@ export default function CinematicFiveChapters() {
 
   return (
     <div ref={containerRef} className="c5-container">
-      {/* ATMOSPHERIC SUN GLOW BACKGROUND (SCRUB-LINKED TO SCROLL) */}
+      {/* ATMOSPHERIC SUN GLOW BACKGROUND */}
       <SunGlowOverlay progress={progress} />
 
       {/* Sound Toggle */}
@@ -261,11 +300,16 @@ export default function CinematicFiveChapters() {
         {isMuted ? 'SOUND: OFF' : '🔊 SOUND: ON'}
       </button>
 
-      {/* ── CHAPTER 1: THE ICARUS ARGUMENT ────────────────────── */}
+      {/* ── CHAPTER 1: INTRO SEQUENCE & THE ESSENCE ────────────── */}
       <div className="c5-pin-wrapper chap-1-pin">
         <section className="c5-stage">
           <div className="c5-content-narrow">
             <div className="c5-tag">CHAPTER 01 // THE ESSENCE</div>
+
+            {/* DREW INTRO HERO POSITION */}
+            <div id="drew-hero" style={{ marginBottom: '1.5rem' }}>
+              <DrewDrone isIntro={true} introStep={introStep} />
+            </div>
 
             <h1 className="c5-heading-large kinetic-headline">
               Industrial inspection still depends on{' '}
@@ -275,8 +319,13 @@ export default function CinematicFiveChapters() {
               </span>
             </h1>
 
-            {/* ICARUS SCRIPTED NARRATIVE BUBBLE CH01 */}
-            <IcarusGuide quote="Icarus didn't fail because he flew. He failed because nothing could tell him how close was too close." />
+            {/* DREW CHAPTER 1 SCRIPTED NARRATIVE */}
+            <div style={{ marginTop: '1rem' }}>
+              <DrewDrone
+                quote="First, here's the problem I get sent in to solve."
+                subQuote="Industrial inspection still depends on humans walking into dangerous places."
+              />
+            </div>
 
             <p className="c5-text-body highlight" style={{ marginTop: '1.5rem' }}>
               Physical AI changes the equation—from reactive repairs after failure to continuous autonomous vigilance.
@@ -311,8 +360,13 @@ export default function CinematicFiveChapters() {
               </div>
             </div>
 
-            {/* ICARUS SCRIPTED NARRATIVE BUBBLE CH02 */}
-            <IcarusGuide quote="2,400 meters up — closer to the sun than most people will ever stand. Here, nothing needs wax wings." />
+            {/* DREW CHAPTER 2 SCRIPTED NARRATIVE */}
+            <div style={{ marginTop: '1.5rem' }}>
+              <DrewDrone
+                quote="This is Atacama, Chile. 2,400 meters up."
+                subQuote="I fly here so no one else has to climb it."
+              />
+            </div>
           </div>
         </section>
       </div>
@@ -352,8 +406,10 @@ export default function CinematicFiveChapters() {
                 STATUS: {scanStage}
               </div>
 
-              {/* ICARUS SCRIPTED NARRATIVE BUBBLE CH03 */}
-              <IcarusGuide quote="A scan doesn't get tired. It doesn't lose its nerve at altitude, or fly on pride." />
+              {/* DREW CHAPTER 3 SCRIPTED NARRATIVE */}
+              <div style={{ marginTop: '1rem' }}>
+                <DrewDrone quote="Watch — I'm scanning Holding Tank 4A right now." />
+              </div>
             </div>
           </div>
         </section>
@@ -370,8 +426,11 @@ export default function CinematicFiveChapters() {
               <h2 className="c5-proof-stat mechanical-font">SHELL PETROLEUM</h2>
               <div className="panel-metric">100X FLIGHT FREQUENCY</div>
 
-              {/* ICARUS SCRIPTED NARRATIVE BUBBLE CH04 */}
-              <IcarusGuide quote="Shell didn't need a myth. They needed 100x the flight frequency — and someone willing to prove the wings would hold." />
+              {/* DREW CHAPTER 4 SCRIPTED NARRATIVE */}
+              <DrewDrone
+                quote="Shell didn't take my word for it either."
+                subQuote="Now they run flights 100x more often than before."
+              />
             </div>
           </div>
 
@@ -401,21 +460,27 @@ export default function CinematicFiveChapters() {
             </div>
           </div>
 
-          {/* PANEL 4: THE TURN (QUIET STRIPPED-BACK MOMENT) */}
+          {/* PANEL 4: THE TURN (DREW HOVERS QUIETLY IN MUTED MODE) */}
           <div className="horizontal-panel panel-4">
             <div className="panel-inner text-center" style={{ background: '#000', border: '1px solid var(--mustard)' }}>
               <div className="c5-tag" style={{ color: 'var(--mustard)' }}>
                 THE TURN // WHAT THE CASE STUDY DOESN'T SHOW
               </div>
 
-              {/* ICARUS SCRIPTED NARRATIVE BUBBLE THE TURN */}
-              <blockquote className="c5-silence-quote" style={{ marginTop: '1rem' }}>
-                “Every story on this page has its own Icarus moment. A first flight that didn't work. A budget meeting someone almost walked out of. The wax that almost melted before it held.
-                <br /><br />
+              {/* DREW THE TURN SCRIPTED NARRATIVE (DESATURATED MUTED CLOUD) */}
+              <div style={{ margin: '1.5rem 0' }}>
+                <DrewDrone
+                  isTurn={true}
+                  quote="Can I be honest with you for a second?"
+                  subQuote="Not every flight worked the first time. There were failed pilots. Budget fights. Someone who almost said no."
+                />
+              </div>
+
+              <blockquote className="c5-silence-quote">
                 <span className={`redaction-wrapper inline ${declassified35 ? 'declassified' : ''}`}>
                   <span className="redaction-bar" />
-                  <strong className="redaction-text">That part never makes the case study. At NestGen, it does.</strong>
-                </span>”
+                  <strong className="redaction-text">That part doesn't usually make it into the case study. At NestGen, it does.</strong>
+                </span>
               </blockquote>
             </div>
           </div>
@@ -429,11 +494,13 @@ export default function CinematicFiveChapters() {
             <div className="c5-tag" style={{ color: 'var(--ink)' }}>SEPTEMBER 29, 2026 · ONLINE GLOBAL SUMMIT</div>
             <h1 className="c5-reveal-title kinetic-headline">NESTGEN '26</h1>
 
-            {/* ICARUS CHOICE MOMENT BUBBLE */}
-            <IcarusGuide quote="Icarus only had one path, and it killed him. You get to pick yours." />
+            {/* DREW CHOICE MOMENT NARRATIVE */}
+            <div style={{ margin: '1rem 0' }}>
+              <DrewDrone quote="Curious which industry this hits closest to home for you?" />
+            </div>
 
             {/* REAL INTERACTIVE INDUSTRY TARGET LOCK SELECTOR */}
-            <div className="c5-track-selector-title" style={{ marginTop: '1.5rem' }}>
+            <div className="c5-track-selector-title" style={{ marginTop: '1rem' }}>
               TARGET LOCK // SELECT AN INDUSTRY TRACK TO REVEAL CONFIRMED SPEAKERS & PLAYBOOKS:
             </div>
 
@@ -467,9 +534,12 @@ export default function CinematicFiveChapters() {
               </div>
             </div>
 
-            {/* ICARUS PAYOFF CTA */}
-            <div className="c5-loop-quote">
-              “For 2,000 years, flying too far meant risking everything. September 29th — meet the people who finally built wings that don't melt.”
+            {/* DREW CLOSING CTA NARRATIVE */}
+            <div style={{ margin: '1.5rem 0' }}>
+              <DrewDrone
+                quote="That's everything I wanted to show you."
+                subQuote="September 29th, online — meet the people who actually built this with me."
+              />
             </div>
 
             <div style={{ marginTop: '2rem' }}>

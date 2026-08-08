@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,300&display=swap');
 
-/* ── ICARUS MYTH & CLASSIFIED DOSSIER BRAND SYSTEM ───── */
+/* ── CLASSIFIED DOSSIER & DREW THE DRONE BRAND SYSTEM ───── */
 :root {
   --ink:        #2A1F16;
   --cream:      #EDE8DA;
@@ -19,6 +19,7 @@
   /* Easing Tokens */
   --ease-mechanical: cubic-bezier(0.19, 1, 0.22, 1);
   --ease-cinematic:  cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-pop:        cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 /* ── RESET & GPU PERFORMANCE ─────────────────────────── */
@@ -66,53 +67,114 @@ img {
   will-change: transform;
 }
 
-/* ── ORIGINAL PIXEL-ART ICARUS GUIDE DIALOGUE BOX ────── */
-.icarus-guide-box {
-  display: flex;
-  align-items: flex-start;
+/* ── DREW THE DRONE GUIDE CHARACTER & SPEECH CLOUD ───── */
+.drew-drone-container {
+  display: inline-flex;
+  align-items: center;
   gap: 1.2rem;
-  background: rgba(17, 21, 28, 0.85);
-  border: 1px solid var(--mustard);
-  padding: 1.2rem 1.5rem;
-  margin: 1.5rem 0;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
   position: relative;
-  z-index: 10;
-  backdrop-filter: blur(8px);
+  z-index: 100;
 }
 
-.icarus-avatar-frame {
-  flex-shrink: 0;
-  width: 48px;
-  height: 48px;
-  background: var(--dark-bg);
-  border: 1.5px solid var(--mustard);
+.drew-drone-sprite {
+  width: 54px;
+  height: 44px;
+  position: relative;
+  animation: drew-hover-bob 2.4s ease-in-out infinite;
+}
+
+@keyframes drew-hover-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+
+.drew-propeller {
+  transform-origin: center;
+  animation: prop-spin 0.15s linear infinite;
+}
+
+@keyframes prop-spin {
+  0% { opacity: 1; transform: scaleX(1); }
+  50% { opacity: 0.4; transform: scaleX(-1); }
+  100% { opacity: 1; transform: scaleX(1); }
+}
+
+.drew-lens-pulse {
+  animation: lens-glow 1.8s ease-in-out infinite;
+}
+
+@keyframes lens-glow {
+  0%, 100% { fill: #00FF7F; opacity: 1; }
+  50% { fill: #E4B12A; opacity: 0.6; }
+}
+
+.drew-speech-cloud {
+  position: relative;
+  background: #11151C;
+  border: 2px solid var(--mustard);
+  padding: 1rem 1.4rem;
+  border-radius: 8px;
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.6);
+  max-width: 480px;
+  text-align: left;
+  transform-origin: left center;
+  animation: cloud-pop 0.4s var(--ease-pop);
+}
+
+@keyframes cloud-pop {
+  0% { opacity: 0; transform: scale(0.7); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.drew-speech-cloud.cloud-turn {
+  background: #000;
+  border-color: rgba(228, 177, 42, 0.4);
+  box-shadow: 0 0 20px rgba(0,0,0,0.9);
+}
+
+.cloud-header {
   display: flex;
   align-items: center;
-  justify-content: center;
-  box-shadow: 2px 2px 0 var(--mustard);
-}
-
-.icarus-bubble {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-  text-align: left;
-}
-
-.icarus-name-tag {
+  justify-content: space-between;
   font-family: var(--font-pixel);
-  font-size: 0.45rem;
+  font-size: 0.42rem;
   color: var(--mustard);
   letter-spacing: 0.15em;
+  margin-bottom: 0.4rem;
 }
 
-.icarus-quote-text {
+.cloud-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--mission-green);
+  box-shadow: 0 0 8px var(--mission-green);
+}
+
+.cloud-text {
   font-size: 0.95rem;
   color: var(--cream);
-  font-style: italic;
-  line-height: 1.6;
   font-weight: 400;
+  line-height: 1.6;
+}
+
+.cloud-text-sub {
+  font-size: 0.85rem;
+  color: rgba(237, 232, 218, 0.7);
+  margin-top: 0.4rem;
+  line-height: 1.5;
+}
+
+.cloud-tail {
+  position: absolute;
+  left: -9px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-top: 7px solid transparent;
+  border-bottom: 7px solid transparent;
+  border-right: 9px solid var(--mustard);
 }
 
 /* ── PINNED HORIZONTAL BREAKOUT PANELS (CHAPTER 04) ──── */
@@ -573,10 +635,6 @@ img {
   color: var(--cream);
 }
 
-.c5-quote-dim {
-  color: rgba(255,255,255,0.55);
-}
-
 /* ── CHAPTER 5: REVEAL & INTERACTIVE TARGET LOCK SELECTOR ──── */
 .c5-reveal-title {
   font-family: var(--font-pixel);
@@ -756,7 +814,7 @@ img {
     padding: 0.8rem;
     font-size: 0.4rem;
   }
-  .icarus-guide-box {
+  .drew-drone-container {
     flex-direction: column;
     align-items: center;
     text-align: center;
@@ -778,6 +836,9 @@ img {
   }
   .sun-glow-background {
     display: none !important;
+  }
+  .drew-propeller, .drew-drone-sprite {
+    animation: none !important;
   }
   body {
     cursor: auto !important;
